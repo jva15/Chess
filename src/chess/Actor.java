@@ -1,4 +1,4 @@
-package graphicstest;
+package src.chess;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -22,7 +22,7 @@ public class Actor{
 	
 	int xsize,ysize;
 	
-	int velocityX,velocityY//,velocityZ;
+	int velocityX,velocityY;//,velocityZ;
 	
 	
 	//image reading data

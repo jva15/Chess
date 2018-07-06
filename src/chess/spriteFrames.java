@@ -1,4 +1,4 @@
-package graphicstest;
+package src.chess;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
