@@ -15,7 +15,10 @@ import javax.swing.Timer;
 
 public class Actor{
 	int ID;
-	int factionID;//1 or 2
+	int factionID;//may need this for i dentification of player ownership but as well as restricting movement of pawns
+	Node Currentcell;//keep this in mind when changing the Actors position.
+	
+	
 	
 	int xoffset=0,yoffset=0;
 	int xroffset=0,yroffset=0;
@@ -31,7 +34,7 @@ public class Actor{
 	boolean staticobject=true;
 	
 	public static BufferedImage image;
-	
+	boolean highlighted;
 	
 	
 	

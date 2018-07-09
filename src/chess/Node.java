@@ -9,7 +9,7 @@ import javax.swing.Timer;
 import javax.swing.*;
 
 //TODO: Extend 
-public class Node {
+public class Node extends  Button {
 	
 	public int xoffset,yoffset,Virtualoffsetx,Virtualoffsety;
 	public int cellsize;
@@ -17,7 +17,8 @@ public class Node {
 	public Actor actor;
 	public Node[] adgNodes;
 	public int visited;//
-	public boolean occupied;
+	public boolean occupied,highlighted;
+	
 	public Node() {
 		// TODO Auto-generated constructor stub
 		poly=null;
@@ -27,6 +28,15 @@ public class Node {
 		adgNodes=new Node[4];
 		xoffset=yoffset=0;
 		cellsize=10;
+		highlighted=false;
+		
+		addMouseListener(new MouseAdapter() {
+		    @Override
+		    public void mouseClicked(MouseEvent e) {
+		        highlighted=true;
+		        System.out.println("Printed ("+ e.getX() +"),("+e.getY()+")");
+		    }
+		});
 	}
 	public Node(int x,int y)
 	{
@@ -77,6 +87,10 @@ public class Node {
 		poly=new Polygon( pay , pax , 4);
 
 	}
+	
+
+	
+	
 	
 	
 }

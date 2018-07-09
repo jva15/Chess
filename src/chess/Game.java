@@ -26,15 +26,15 @@ public class Game
 	// execute application
 	public static void main( String args[] )
 	{
-	   
+
 	   JFrame frame = new JFrame( "Grid" );
 	   frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 	   
 	   
+	   GridPanel bp = new GridPanel();
+	  
 	   
-	   
-
-	   GridPanel bp = new GridPanel(); 
+	   //
 	   
 	   frame.add( bp );
 	   frame.setSize( 300*3, 300*3 ); // set frame size
@@ -89,8 +89,9 @@ class GridPanel extends JPanel implements ActionListener
 	
 	private int delay = 10;
 	protected Timer timer;
-	private int x = 435;		// x position of grid
-	private int y = 685;		// y position of grid
+	//protected Timer highlight_animator;
+	private int x = 0;//435;		// x position of grid
+	private int y = 0;//685;		// y position of grid
 	private int cellsize = 150;	// cell size on screen
 	private int cellspace= 0;//15; // space between the cells
 	private double rad = 40; // current view angle
@@ -119,15 +120,17 @@ class GridPanel extends JPanel implements ActionListener
 	
 	public GridPanel() 
 	{
-		//TODO: set to work for standalones
-	   /*
-		blockfile= new File(System.getProperty("user.dir")+"\\src\\graphicstest\\" + "block.png");
-	   try {
-	   image=ImageIO.read(blockfile);
-	   }catch(IOException e){System.out.println(System.getProperty("user.dir")+"fuck");}
-	*/
+		
+		addMouseListener(new MouseAdapter() {
+		    @Override
+		    public void mouseClicked(MouseEvent e) {
+		    	int mx=(int)((center+rotoffx((int)(e.getY()*3.3)-center,e.getX()-center,Math.toRadians(rad)))/cellsize);
+		    	int my=(int)((center+rotoffy((int)(e.getY()*3.3-center),e.getX()-center,Math.toRadians(rad)))/cellsize);
+		    	cellgrid[mx%gsize][(my)%gsize].highlighted=true;
+		    }
+		    
+		});
 	   timer = new Timer(delay, this);
-	   boxgrid=new Polygon[gsize][gsize];
 	   cellgrid=Init_NodeAr(cellgrid,gsize);//new Node[gsize][gsize];
 	   timer.start();		// start the timer
 	   
@@ -147,97 +150,39 @@ class GridPanel extends JPanel implements ActionListener
 	public void paintComponent( Graphics g )
 	{
 	   super.paintComponent( g ); // call superclass's paintComponent 
-	   int[] xa=new int[4];
-	   int[] ya=new int[4];
-	   int xoffset,yoffset;
 
-	   int soffsety=(int)(-47*3.3);//for testing purposes; should be replaced by the actors value at time of application
-	   int soffsetx=0;//for testing purposes; should be replaced by the actors value at time of application
-	   int actorsizey=(int)(47*3.5);
+	   
+	   
+	   //156 int[] xa=new int[4];
+	   //157 int[] ya=new int[4];
+	   //158 int xoffset,yoffset;
+	   //159 int soffsety=(int)(-47*3.3);//for testing purposes; should be replaced by the actors value at time of application
+	   //int soffsetx=0;//for testing purposes; should be replaced by the actors value at time of application
+	   //int actorsizey=(int)(47*3.5);
 	   
 	   Graphics2D g2d = (Graphics2D)g;
 	    //x=y=getHeight()/2;
 	    int xpof,ypof;
 	    dx=dy=0;
 	    	    
-	    
-		/*for(int i=0;i<gsize;i++)for(int j =0;j<gsize;j++)
-		   {
-			
-				xoffset=x+i*(cellsize+cellspace);
-				yoffset=y+j*(cellsize+cellspace);
-				xa[0]=xoffset;
-				ya[0]=yoffset;
-				xa[1]=xoffset+cellsize;
-				ya[1]=yoffset;
-				xa[2]=xoffset+cellsize;
-				ya[2]=yoffset+cellsize;
-				xa[3]=xoffset;
-				ya[3]=yoffset+cellsize;
-				
-				boxgrid[i][j]=new Polygon( xa , ya , 4);
-
-		   
-		   
-		   }*/
 		
-		//prerender actors
 		
-		/*for(int i=0;i<gsize;i++)for(int j =0;j<gsize;j++)
-		   {
-				//if(actorgrid[i][j].actor!=null) {
-				xpof=x+i*(cellsize+cellspace);
-				ypof=y+j*(cellsize+cellspace);
-				
-				
-				//TODO:Actor , have actor sprite height replace baseoffset
-				xoffset=focalpointx+soffsetx+rotoffx(ypof-focalpointy,xpof-focalpointx,Math.toRadians(rad));
-				yoffset=focalpointy+soffsety+rotoffy(ypof-focalpointy,xpof-focalpointx,Math.toRadians(rad));
-				//xoffset=focalpointx+actorgrid[i][j].actor.xsize*-1+rotoffx(ypof-focalpointy,xpof-focalpointx,Math.toRadians(rad));
-				//yoffset=focalpointy+actorgrid[i][j].actor.ysize*-1+rotoffy(ypof-focalpointy,xpof-focalpointx,Math.toRadians(rad));
-				//actorgrid[i][j].actor.setroffset(xoffset,yoffset);
-				
-				
-				
-				
-				xa[0]=xoffset;
-				ya[0]=(int)(yoffset);
-				xa[1]=xoffset+cellsize;
-				ya[1]=(int)(yoffset);
-				xa[2]=xoffset+cellsize;
-				ya[2]=(int)(yoffset)+(int)(actorsizey);
-				xa[3]=xoffset;
-				ya[3]=(int)(yoffset)+(int)(actorsizey);
-				
-				
-				//actorgrid[i][j]=new Polygon( xa , ya , 4);
-				//}
-		   }*/
 		
 		g2d.scale(1, 0.3);		
-		
 		g2d.rotate(Math.toRadians(rad),center,center);
 		
-		for(int i=0;i<gsize;i++)for(int j =0;j<gsize;j++)
-			
+		
+		//draw the grids
+		for(int i=0;i<gsize;i++)for(int j =0;j<gsize;j++)	
 		{
+			//checkered
 			int RoB=(i+j)%2;
 			
-			if(RoB==1)			g2d.setColor(Color.red);
-			else 				g2d.setColor(Color.black);
-			
-			
-			/*all colors
-			int cindex=(i*gsize+j);
-			if(cindex<225)
-				g2d.setColor(new Color(0,0,(i*gsize+j)%225 ));
-			else if(cindex>=225&&cindex<225*2)
-				g2d.setColor(new Color(0,(i*gsize+j)%225,225-((i*gsize+j)%225) ));
-			else if((cindex>=225*2&&cindex<225*3))
-				g2d.setColor(new Color((i*gsize+j)%225,225-((i*gsize+j)%225),0));
-			else g2d.setColor(new Color(225,(cindex%225),(cindex%225)));
-			*/
-			
+			//highlighting
+			if(cellgrid[i][j].highlighted==true) g2d.setColor(Color.YELLOW);
+			else if(RoB==1)			g2d.setColor(Color.red);
+			else 				g2d.setColor(Color.black);	
+
 			g2d.draw(cellgrid[i][j].poly);
 			g2d.fill(cellgrid[i][j].poly);
 		}
@@ -265,6 +210,7 @@ class GridPanel extends JPanel implements ActionListener
 		
 		
 	}
+	
 	
 	
 	public Node[][] Init_NodeAr(Node[][] nodeArr,int NAsize)
@@ -301,12 +247,10 @@ class GridPanel extends JPanel implements ActionListener
 		}
 		return nodeArr;
 	}
-	
+	/*
 	public void Rotate_NodeArray(Node[][] nodeArr) 
 	{
 		int xpof,ypof;
-		
-		
 		for(int i=0;i<nodeArr.length;i++)for(int j=0;j<nodeArr.length;j++)
 		{
 			xpof=x+i*(cellsize+cellspace);
@@ -314,29 +258,28 @@ class GridPanel extends JPanel implements ActionListener
 			
 			nodeArr[i][j].Virtualoffsetx=focalpointx+rotoffx(ypof-focalpointy,xpof-focalpointx,Math.toRadians(rad));
 			nodeArr[i][j].Virtualoffsety=focalpointy+rotoffy(ypof-focalpointy,xpof-focalpointx,Math.toRadians(rad));
-		}
-		
-	
+		}	
 	}
 	
-	public static void nodeRender(Vector<Node> que,Graphics2D g2dn) {
+	public static void nodeRender(Vector<Node> que,Graphics2D g2dn) 
+	{
 		
-		
-	}	
+	}*/	
 	public static int rotoffx(int py, int px, double theta) {
-		//return cx+((px-cx)* (int)Math.cos(theta));
 		return (int)((double)py*Math.cos(theta)-(double)px*Math.sin(theta));
-		
-		
-	}	
+	}
 	public static int rotoffy(int py, int px, double theta) {
 		return (int)((double)px*Math.cos(theta)+(double)py*Math.sin(theta));
-		
-		
-		//return cy+((py-cy)* (int)Math.sin(theta));
-		
-	}	
-		
-	
+	}
+	public static Color MySpectrum(int cindex) {
+		//all colors
+		if(cindex<225)
+			return new Color(0,0,cindex%225 );
+		else if(cindex>=225&&cindex<225*2)
+			return new Color(0,cindex%225,225-(cindex%225) );
+		else if((cindex>=225*2&&cindex<225*3))
+			return new Color(cindex%225,225-(cindex%225),0);
+		else return new Color(225,(cindex%225),(cindex%225));
+	}
 
 }
