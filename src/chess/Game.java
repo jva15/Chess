@@ -99,11 +99,12 @@ class GridPanel extends JPanel implements ActionListener
 	private int gsize=8;//number of cells(this is then squared)
 
 	int center=x+(cellsize+cellspace)*gsize/2-cellspace;
+	int[] centerpoint=new int[2];;
+	int[] tp =new int[2];//just a temporary pointer
 	int focalpointx=x+(int)(((center-x)*2-(cellsize))/2);
 	int focalpointy=y+(int)(((center-y)*2-(cellsize))/2);
 	
 	
-	private Polygon boxgrid[][];  //tile grid
 	private Node cellgrid[][];  //actor grid
 	
 	
@@ -124,9 +125,17 @@ class GridPanel extends JPanel implements ActionListener
 		addMouseListener(new MouseAdapter() {
 		    @Override
 		    public void mouseClicked(MouseEvent e) {
-		    	int mx=(int)((center+rotoffx((int)(e.getY()*3.3)-center,e.getX()-center,Math.toRadians(rad)))/cellsize);
-		    	int my=(int)((center+rotoffy((int)(e.getY()*3.3-center),e.getX()-center,Math.toRadians(rad)))/cellsize);
-		    	cellgrid[mx%gsize][(my)%gsize].highlighted=true;
+		    	//get the mouse coords
+		    	
+		    	int[] mousepointer=new int[2];
+		    	mousepointer[0]=e.getX();
+		    	mousepointer[1]=(int)(e.getY()*3.3);//the calculation is grid based, so i morph the y so it simulates a reverted version of the grid(before the y shrink)
+		    	centerpoint[0]=centerpoint[1]=center;//load the center point
+		    	
+		    	tp=rotoffc(centerpoint,mousepointer,Math.toRadians(rad));//rotate the mouse coords around the center point so that the grid is calculated as if straight.
+		    	tp[0]=(int)(tp[0]/cellsize);//
+		    	tp[1]=(int)(tp[1]/cellsize);//
+		    	cellgrid[tp[0]%gsize][tp[1]%gsize].highlighted=true;//highlights the cell, but this is just a place holder
 		    }
 		    
 		});
@@ -157,12 +166,12 @@ class GridPanel extends JPanel implements ActionListener
 	   //157 int[] ya=new int[4];
 	   //158 int xoffset,yoffset;
 	   //159 int soffsety=(int)(-47*3.3);//for testing purposes; should be replaced by the actors value at time of application
-	   //int soffsetx=0;//for testing purposes; should be replaced by the actors value at time of application
-	   //int actorsizey=(int)(47*3.5);
+	   //160 int soffsetx=0;//for testing purposes; should be replaced by the actors value at time of application
+	   //161 int actorsizey=(int)(47*3.5);
 	   
 	   Graphics2D g2d = (Graphics2D)g;
 	    //x=y=getHeight()/2;
-	    int xpof,ypof;
+	    //165int xpof,ypof;
 	    dx=dy=0;
 	    	    
 		
@@ -192,17 +201,8 @@ class GridPanel extends JPanel implements ActionListener
 		//draw the actors
 		for(int i=0;i<gsize;i++)for(int j =0;j<gsize;j++)
 		   {
-				//actorgrid[i][j].render(g2d);
-				//g2d.setColor(Color.black);g2d.draw(actorgrid[i][j]);
-				//g2d.setColor(Color.red);g2d.fill(actorgrid[i][j]);
 				
 		   }
-			
-			
-			
-			
-			
-		
 			
 		x += dx;
 		y += dy;
@@ -247,7 +247,7 @@ class GridPanel extends JPanel implements ActionListener
 		}
 		return nodeArr;
 	}
-	/*
+	/* ignor these.. fornow
 	public void Rotate_NodeArray(Node[][] nodeArr) 
 	{
 		int xpof,ypof;
@@ -265,6 +265,18 @@ class GridPanel extends JPanel implements ActionListener
 	{
 		
 	}*/	
+	
+	
+	//rotates a point around a center
+	//cp: center point to rotate around, p: point to rotate around center point, and theta: degrees to rotate.
+	public static int[] rotoffc(int[] cp,int[] p , double theta) {//returns the rotated point
+		int[] np=new int[2];
+		np[0]=cp[0]+ rotoffx((p[1]-cp[1]), (p[0]-cp[0]), theta);//calculates x
+		np[1]=cp[1]+ rotoffy((p[1]-cp[1]), (p[0]-cp[0]), theta);
+		return np;
+	}
+	
+	//functions for rotating
 	public static int rotoffx(int py, int px, double theta) {
 		return (int)((double)py*Math.cos(theta)-(double)px*Math.sin(theta));
 	}
