@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-//TODO: allow it to use multiple delays
+//DOTO: allow it to use multiple delays
 
 
 public class spriteFrames {
@@ -26,7 +26,6 @@ public class spriteFrames {
 	//int x,y,xsize,ysize;//location on screen
 	
 	public spriteFrames(String imagefile,int pixheight,int pixlength) {
-		// TODO Auto-generated constructor stub
 		images= new BufferedImage[1];
 		pixelheight= new int[1];//top,left corner of a frame
 		pixellength= new int[1];

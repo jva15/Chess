@@ -31,51 +31,18 @@ public class Game
 	   frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 	   
 	   
-	   GridPanel bp = new GridPanel();
+	   GridPanel gp = new GridPanel();
 	  
 	   
-	   //
+	   //TODO: add splash screen panel
+	   //frame.add(sp);
 	   
-	   frame.add( bp );
+	   frame.add( gp );
 	   frame.setSize( 300*3, 300*3 ); // set frame size
 	   frame.setVisible( true ); // display frame
 	} // end main
-	public void initActors()
-	{
-		//0: White Pawn
-		//1: White Castle
-		//2: White Knight
-		//3: White Bishop
-		//4: White King
-		//5: White Queen
-		//6: Black Pawn
-		//7: Black Castle
-		//8: Black Knight
-		//9: Black Bishop
-		//10: Black King
-		//11: Black Queen
-				
-		
-		
-		
-		
-	}
-	//public int[] PlaceActors()//place peaces
-	//{
-		
-		
-		//return format: 		
-	/* 
-	 * 
-	 * */
 	
 	
-	
-	
-	
-	
-	
-	//}
 }
 
 
@@ -83,29 +50,27 @@ public class Game
 
 class GridPanel extends JPanel implements ActionListener
 {
-	public Actor AllActors[];//list of all actor resources
-	public Actor Actorlist[];//list of actors on the board
+	public Actor Actors[];//list of actors
 	
 	
 	private int delay = 10;
 	protected Timer timer;
-	//protected Timer highlight_animator;
-	private int x = 0;//435;		// x position of grid
-	private int y = 0;//685;		// y position of grid
+	private int x = 0;		// x position of grid
+	private int y = 0;		// y position of grid
 	private int cellsize = 150;	// cell size on screen
 	private int cellspace= 0;//15; // space between the cells
-	private double rad = 40; // current view angle
-	private double radd =0;// 0.1/2; // change in view angle
+	private double rad = 00; // current view angle
+	private double radd =0.05;// 0.1/2; // change in view angle
 	private int gsize=8;//number of cells(this is then squared)
 
-	int center=x+(cellsize+cellspace)*gsize/2-cellspace;
-	int[] centerpoint=new int[2];;
+	//int center=x+(cellsize+cellspace)*gsize/2-cellspace;//
+	int[] centerpoint=new int[2];//same as above just in point form
 	int[] tp =new int[2];//just a temporary pointer
-	int focalpointx=x+(int)(((center-x)*2-(cellsize))/2);
-	int focalpointy=y+(int)(((center-y)*2-(cellsize))/2);
+	int focalpointx;//used to store the center point of actors to be rotated
+	int focalpointy;
 	
 	
-	private Node cellgrid[][];  //actor grid
+	private Node cellgrid[][];  //cell grid
 	
 	
 	
@@ -121,7 +86,16 @@ class GridPanel extends JPanel implements ActionListener
 	
 	public GridPanel() 
 	{
+		centerpoint[0]=x+((cellsize+cellspace)*gsize)/2-cellspace;
+		centerpoint[1]=y+((cellsize+cellspace)*gsize)/2-cellspace;
+		focalpointx=x+(int)(((centerpoint[0]-x)*2-(cellsize))/2);//used to store the center point of actors to be rotated
+		focalpointy=y+(int)(((centerpoint[1]-y)*2-(cellsize))/2);
 		
+		System.out.println("cx cy"+centerpoint[0]+ " "+centerpoint[1]);
+		System.out.println("fx fy"+focalpointx+ " "+focalpointy);
+		
+		
+		//this is where selection of items occures
 		addMouseListener(new MouseAdapter() {
 		    @Override
 		    public void mouseClicked(MouseEvent e) {
@@ -130,19 +104,23 @@ class GridPanel extends JPanel implements ActionListener
 		    	int[] mousepointer=new int[2];
 		    	mousepointer[0]=e.getX();
 		    	mousepointer[1]=(int)(e.getY()*3.3);//the calculation is grid based, so i morph the y so it simulates a reverted version of the grid(before the y shrink)
-		    	centerpoint[0]=centerpoint[1]=center;//load the center point
 		    	
 		    	tp=rotoffc(centerpoint,mousepointer,Math.toRadians(rad));//rotate the mouse coords around the center point so that the grid is calculated as if straight.
+		    	
 		    	tp[0]=(int)(tp[0]/cellsize);//
 		    	tp[1]=(int)(tp[1]/cellsize);//
+		    	if(tp[0]>=0&&tp[1]>=0)
 		    	cellgrid[tp[0]%gsize][tp[1]%gsize].highlighted=true;//highlights the cell, but this is just a place holder
 		    }
 		    
 		});
-	   timer = new Timer(delay, this);
-	   cellgrid=Init_NodeAr(cellgrid,gsize);//new Node[gsize][gsize];
+	   timer = new Timer(delay, this);//refresh timer
+	   cellgrid=Init_NodeAr(cellgrid,gsize);
 	   timer.start();		// start the timer
-	   
+
+	   Actors=new Actor[8*4];
+	   Populate_board();
+		
 	  
 	   
 	}
@@ -150,8 +128,7 @@ class GridPanel extends JPanel implements ActionListener
 
 	public void actionPerformed(ActionEvent e)
 	// will run when the timer fires
-	{
-		
+	{	
 		repaint();
 	}
 	
@@ -159,26 +136,17 @@ class GridPanel extends JPanel implements ActionListener
 	public void paintComponent( Graphics g )
 	{
 	   super.paintComponent( g ); // call superclass's paintComponent 
-
-	   
-	   
-	   //156 int[] xa=new int[4];
-	   //157 int[] ya=new int[4];
-	   //158 int xoffset,yoffset;
-	   //159 int soffsety=(int)(-47*3.3);//for testing purposes; should be replaced by the actors value at time of application
-	   //160 int soffsetx=0;//for testing purposes; should be replaced by the actors value at time of application
-	   //161 int actorsizey=(int)(47*3.5);
-	   
+	   Rotate_NodeArray(cellgrid);// update the virtual offsets
+	   	   
 	   Graphics2D g2d = (Graphics2D)g;
 	    //x=y=getHeight()/2;
-	    //165int xpof,ypof;
 	    dx=dy=0;
 	    	    
 		
 		
-		
+		//perform the transformation for the 3d effect
 		g2d.scale(1, 0.3);		
-		g2d.rotate(Math.toRadians(rad),center,center);
+		g2d.rotate(Math.toRadians(rad),centerpoint[0],centerpoint[1]);
 		
 		
 		//draw the grids
@@ -187,47 +155,56 @@ class GridPanel extends JPanel implements ActionListener
 			//checkered
 			int RoB=(i+j)%2;
 			
-			//highlighting
-			if(cellgrid[i][j].highlighted==true) g2d.setColor(Color.YELLOW);
+			if(cellgrid[i][j].highlighted==true) g2d.setColor(Color.YELLOW);//highlighting
 			else if(RoB==1)			g2d.setColor(Color.red);
 			else 				g2d.setColor(Color.black);	
 
 			g2d.draw(cellgrid[i][j].poly);
 			g2d.fill(cellgrid[i][j].poly);
 		}
+
+		//unrotate it since Actors use raw coords to store post rotation
+		g2d.rotate(Math.toRadians(-rad),centerpoint[0],centerpoint[1]);
+		//g2d.scale(1, 3.33);		
 		
-		g2d.rotate(Math.toRadians(-rad),center,center);
 		
-		//draw the actors
-		for(int i=0;i<gsize;i++)for(int j =0;j<gsize;j++)
-		   {
-				
-		   }
-			
+		for(int i=0;i<Actors.length;i++)
+		{
+			Actors[i].updatebycell();//snap the actor to the new coords
+			Actors[i].Drawframe(g2d);//draw the actor
+		}
+		
 		x += dx;
 		y += dy;
-		rad +=radd;//TODO: Set user controlled once the final visualization is complete
+		rad +=radd;//TODO: Set radd to be user controlled once the final visualization is complete
 		
 		
 	}
 	
 	
 	
+	/*--------------functions------------------*/
+	
+	//creates the node array
 	public Node[][] Init_NodeAr(Node[][] nodeArr,int NAsize)
 	{
 		nodeArr=new Node[NAsize][NAsize];
 		return Build_NodeArray(nodeArr);
 	}
+	
 	public Node[][] Build_NodeArray(Node[][] nodeArr) 
 	{
+		//creates node
 		for(int i=0;i<nodeArr.length;i++)for(int j=0;j<nodeArr.length;j++)
 		{
 			int pxoffset=x+i*(cellsize+cellspace);
 			int pyoffset=y+j*(cellsize+cellspace);
+			
 			nodeArr[i][j]=new Node(pxoffset,pyoffset,cellsize,true);
 		}
 	
 			
+		//links the nodes together
 		for(int i=0;i<nodeArr.length;i++)for(int j=0;j<nodeArr.length;j++)
 		{
 			
@@ -247,7 +224,35 @@ class GridPanel extends JPanel implements ActionListener
 		}
 		return nodeArr;
 	}
-	/* ignor these.. fornow
+	//sets the pieces on the board
+	public void Populate_board() {
+		//order placed affects 
+		
+		//add white pieces
+		Actors[0]=new Rook(cellgrid[0][0],0);//white rook1
+		Actors[1]=new Rook(cellgrid[7][0],0);//white rook2
+		Actors[2]=new Knight(cellgrid[1][0],0);//white Knight1
+		Actors[3]=new Knight(cellgrid[6][0],0);//white Knight2
+		Actors[4]=new Bishop(cellgrid[2][0],0);//white Bishop1
+		Actors[5]=new Bishop(cellgrid[5][0],0);//white Bishop2
+		Actors[6]=new King(cellgrid[3][0],0);//white King
+		Actors[7]=new Queen(cellgrid[4][0],0);//white Queen
+		for(int i =0;i<8;i++) Actors[i+8]=new Pawn(cellgrid[i][1],0);//white pawns
+		
+		//add black pieces
+		for(int i =0;i<8;i++) Actors[i+16]=new Pawn(cellgrid[i][6],1);//black pawns		
+		Actors[24]=new Rook(cellgrid[0][7],1);//black rook1
+		Actors[25]=new Rook(cellgrid[7][7],1);//black rook2
+		Actors[26]=new Knight(cellgrid[1][7],1);//black Knight1
+		Actors[27]=new Knight(cellgrid[6][7],1);//black Knight2
+		Actors[28]=new Bishop(cellgrid[2][7],1);//black Bishop1
+		Actors[29]=new Bishop(cellgrid[5][7],1);//black Bishop2
+		Actors[30]=new King(cellgrid[4][7],1);//black King
+		Actors[31]=new Queen(cellgrid[3][7],1);//black Queen
+		
+		
+	}
+	
 	public void Rotate_NodeArray(Node[][] nodeArr) 
 	{
 		int xpof,ypof;
@@ -257,14 +262,10 @@ class GridPanel extends JPanel implements ActionListener
 			ypof=y+j*(cellsize+cellspace);
 			
 			nodeArr[i][j].Virtualoffsetx=focalpointx+rotoffx(ypof-focalpointy,xpof-focalpointx,Math.toRadians(rad));
-			nodeArr[i][j].Virtualoffsety=focalpointy+rotoffy(ypof-focalpointy,xpof-focalpointx,Math.toRadians(rad));
+			nodeArr[i][j].Virtualoffsety=(int)((focalpointy+rotoffy(ypof-focalpointy,xpof-focalpointx,Math.toRadians(rad)))+(int)(cellsize/2));
 		}	
 	}
 	
-	public static void nodeRender(Vector<Node> que,Graphics2D g2dn) 
-	{
-		
-	}*/	
 	
 	
 	//rotates a point around a center

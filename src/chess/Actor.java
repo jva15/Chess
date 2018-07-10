@@ -1,5 +1,7 @@
 package src.chess;
 
+import java.awt.AlphaComposite;
+import java.awt.Composite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.LayoutManager;
@@ -10,57 +12,105 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-public class Actor{
+public class Actor extends JButton{//extend button
 	int ID;
-	int factionID;//may need this for i dentification of player ownership but as well as restricting movement of pawns
-	Node Currentcell;//keep this in mind when changing the Actors position.
+	int factionID;//0: player 1, 1 player 2
+	Node currentcell;//keep this in mind when changing the Actors position.
 	
 	
-	
-	int xoffset=0,yoffset=0;
-	int xroffset=0,yroffset=0;
-	
-	int xsize,ysize;
-	
-	int velocityX,velocityY;//,velocityZ;
-	
-	
-	//image reading data
-	int Foffset1x=0,Foffset1y=0;//top,left corner of a frame
-	int Foffset2x=0,Foffset2y=0;//bottom, right corner of a frame
-	boolean staticobject=true;
-	
+	//image access info  
+	int pixellength=27;
+	int pixelheight=38;
+	int I_index_x,I_index_y;
+	public static String imagefile="chess_pieces.png";
 	public static BufferedImage image;
+	public static boolean imageisset=false;
+	
+	//frame draw info
+	int xoffset=0,yoffset=0;
+	int xsize=140;
+	int ysize=(int)(140*3.3);
 	boolean highlighted;
 	
+	Actor(){
+		if(!imageisset)
+		{
+			try {
+				imageisset=true;
+				image=ImageIO.read(new File(System.getProperty("user.dir")+"\\bin\\src\\chess\\" + imagefile));
+			}catch(IOException e)
+			{
+				imageisset=false;
+				System.out.println("can't load "+ System.getProperty("user.dir")+"\\bin\\src\\chess\\"+imagefile);}
+		}
+			I_index_x=I_index_y=0;
+			highlighted=false;
+	}
+	Actor(Node cell,int fac)
+	{
+		this();
+		setCell(cell);
+		setatoffset(cell.Virtualoffsetx,cell.Virtualoffsety);
+		factionID=fac;
+		cell.actor=this;
+
+	}
+	public void kill()
+	{
+		setCell(null);
+		currentcell.actor=null;
 	
+	}
 	
+	public void setatoffset(int ox, int oy) {
+		this.xoffset=ox;
+		this.yoffset=oy-ysize;
+	}
 	
+	public void updatebycell()
+	{
+		setatoffset(currentcell.Virtualoffsetx,currentcell.Virtualoffsety);
+	}
 	
-	//private Timer timer;
-	//int anim_interval=2000;
-	//int current_animation=0;
-	//int current_frame=0;
-	//int[] animationinterval;//stores time it takes for transition
-	//int[] anim_length;//stores lengths of animations.
-	
-	
-	
-	
-	
-	
-	public void setsize(int xs,int ys) {
-		this.xsize=xs;
-		this.ysize=ys;
+	public void setCell(Node cell) {
+		currentcell=cell;
 	}
 	
 	public void setoffset(int ox,int oy) {
 		this.xoffset=ox;
 		this.yoffset=oy;
 	}
+	
+	
+	public void Drawframe(Graphics2D g2d) {
+		//Graphics2D g2d = (Graphics2D)g;
+		
+        g2d.drawImage(image,
+			       xoffset,yoffset,xoffset+xsize, yoffset+ysize,//
+			       pixellength*I_index_x, pixelheight*I_index_y, pixellength*I_index_x+pixellength, pixelheight*I_index_y+pixelheight,
+			       null);
+		//setBounds(xoffset,yoffset-ysize,xoffset+xsize,yoffset);
+	
+	}
+	
+	
+	public void actionPerformed(ActionEvent e) {
+		
+		
+		
+		
+	}
+	
+	public void setsize(int xs,int ys) {
+		this.xsize=xs;
+		this.ysize=ys;
+	}
+	
+	
 		
 
 
