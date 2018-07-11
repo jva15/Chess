@@ -69,6 +69,7 @@ public class Actor extends JButton{//extend button
 	public int GetY() {return yoffset;}
 	//set offset to the lower left corner of sprite
 	public void setatoffset(int ox, int oy) {
+		setBounds(ox,oy,ox+xsize,oy-xsize);
 		this.xoffset=ox;
 		this.yoffset=oy-ysize;
 	}
@@ -79,6 +80,7 @@ public class Actor extends JButton{//extend button
 		if(currentcell.cellsize>xsize) offx=currentcell.Virtualoffsetx+(currentcell.cellsize/2-(xsize/2));
 		else offx = currentcell.Virtualoffsetx-((xsize/2)-currentcell.cellsize/2);
 		
+		
 		setatoffset(offx,currentcell.Virtualoffsety);
 	}
 	
@@ -87,8 +89,10 @@ public class Actor extends JButton{//extend button
 	}
 	
 	public void setoffset(int ox,int oy) {
+		setBounds(ox,oy,ox+xsize,oy-xsize);
 		this.xoffset=ox;
 		this.yoffset=oy;
+	
 	}
 	
 	

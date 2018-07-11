@@ -7,6 +7,8 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Stack;
 import java.util.Vector;
 import java.awt.Graphics;
@@ -50,7 +52,7 @@ public class Game
 
 class GridPanel extends JPanel implements ActionListener
 {
-	public Actor Actors[];//list of actors
+	public Actor[] Actors;//list of actors
 	//TODO: Turn into a vector (or similar data structure) so that deletion is easier to do.
 	
 	private int delay = 10;//delay for the FPS timer
@@ -63,7 +65,7 @@ class GridPanel extends JPanel implements ActionListener
 	private int cellsize = 150;	// cell size on screen
 	private int cellspace= 0;//15; // space between the cells
 	private double rad = 00; // current view angle
-	private double radd =0.05;// 0.1/2; // change in view angle
+	private double radd =4;// 0.1/2; // change in view angle
 	private int gsize=8;//number of cells(this is then squared)
 
 	//int center=x+(cellsize+cellspace)*gsize/2-cellspace;//
@@ -71,6 +73,8 @@ class GridPanel extends JPanel implements ActionListener
 	int[] tp =new int[2];//just a temporary pointer
 	int focalpointx;//used to store the center point of actors to be rotated
 	int focalpointy;
+	
+
 	
 	
 	private Node cellgrid[][];  //cell grid
@@ -166,7 +170,13 @@ class GridPanel extends JPanel implements ActionListener
 
 		//unrotate it since Actors use raw coords to store post rotation
 		g2d.rotate(Math.toRadians(-rad),centerpoint[0],centerpoint[1]);
-		g2d.scale(1, 3.33);		
+		g2d.scale(1, 3.3);		
+		
+		//stop the timer and sort the actors
+		timer.stop();
+		Arrays.sort(Actors, Comparator.comparing(Actor::GetY));//this method is probably not the most optimal.
+		timer.restart();
+		//Warning: be careful with the above 3 lines, can cause crashing or even cause some serious file corruption to ensue
 		
 		//draw actors
 		for(int i=0;i<Actors.length;i++)
@@ -176,7 +186,7 @@ class GridPanel extends JPanel implements ActionListener
 		}
 		
 		rad +=radd;//TODO: Set radd to be user controlled once the final visualization is complete
-		
+		rad=rad%360;
 		
 	}
 	
