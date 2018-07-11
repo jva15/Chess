@@ -51,12 +51,15 @@ public class Game
 class GridPanel extends JPanel implements ActionListener
 {
 	public Actor Actors[];//list of actors
+	//TODO: Turn into a vector (or similar data structure) so that deletion is easier to do.
 	
+	private int delay = 10;//delay for the FPS timer
+	protected Timer timer; //FPS timer
+	private final int x = 0;//dont touch these...	
+	private final int y = 0;//dont touch these...
 	
-	private int delay = 10;
-	protected Timer timer;
-	private int x = 0;		// x position of grid
-	private int y = 0;		// y position of grid
+	public int transx=300;//touch these for moving the gride
+	public int transy=300;//touch these for moving the grid
 	private int cellsize = 150;	// cell size on screen
 	private int cellspace= 0;//15; // space between the cells
 	private double rad = 00; // current view angle
@@ -86,13 +89,11 @@ class GridPanel extends JPanel implements ActionListener
 	
 	public GridPanel() 
 	{
-		centerpoint[0]=x+((cellsize+cellspace)*gsize)/2-cellspace;
-		centerpoint[1]=y+((cellsize+cellspace)*gsize)/2-cellspace;
+		centerpoint[0]=x+((cellsize+cellspace)*gsize)/2-cellspace;//
+		centerpoint[1]=y+((cellsize+cellspace)*gsize)/2-cellspace;//
 		focalpointx=x+(int)(((centerpoint[0]-x)*2-(cellsize))/2);//used to store the center point of actors to be rotated
-		focalpointy=y+(int)(((centerpoint[1]-y)*2-(cellsize))/2);
+		focalpointy=y+(int)(((centerpoint[1]-y)*2-(cellsize))/2);//
 		
-		System.out.println("cx cy"+centerpoint[0]+ " "+centerpoint[1]);
-		System.out.println("fx fy"+focalpointx+ " "+focalpointy);
 		
 		
 		//this is where selection of items occures
@@ -102,13 +103,13 @@ class GridPanel extends JPanel implements ActionListener
 		    	//get the mouse coords
 		    	
 		    	int[] mousepointer=new int[2];
-		    	mousepointer[0]=e.getX();
-		    	mousepointer[1]=(int)(e.getY()*3.3);//the calculation is grid based, so i morph the y so it simulates a reverted version of the grid(before the y shrink)
+		    	mousepointer[0]=e.getX()-transx;
+		    	mousepointer[1]=(int)((e.getY()-transy)*3.3);//the calculation is grid based, so i morph the y so it simulates a reverted version of the grid(before the y shrink)
 		    	
 		    	tp=rotoffc(centerpoint,mousepointer,Math.toRadians(rad));//rotate the mouse coords around the center point so that the grid is calculated as if straight.
 		    	
-		    	tp[0]=(int)(tp[0]/cellsize);//
-		    	tp[1]=(int)(tp[1]/cellsize);//
+		    	tp[0]=(int)((tp[0])/cellsize);//
+		    	tp[1]=(int)((tp[1])/cellsize);//
 		    	if(tp[0]>=0&&tp[1]>=0)
 		    	cellgrid[tp[0]%gsize][tp[1]%gsize].highlighted=true;//highlights the cell, but this is just a place holder
 		    }
@@ -145,6 +146,7 @@ class GridPanel extends JPanel implements ActionListener
 		
 		
 		//perform the transformation for the 3d effect
+	    g2d.translate(transx, transy);
 		g2d.scale(1, 0.3);		
 		g2d.rotate(Math.toRadians(rad),centerpoint[0],centerpoint[1]);
 		
@@ -167,15 +169,13 @@ class GridPanel extends JPanel implements ActionListener
 		g2d.rotate(Math.toRadians(-rad),centerpoint[0],centerpoint[1]);
 		//g2d.scale(1, 3.33);		
 		
-		
+		//draw actors
 		for(int i=0;i<Actors.length;i++)
 		{
 			Actors[i].updatebycell();//snap the actor to the new coords
 			Actors[i].Drawframe(g2d);//draw the actor
 		}
 		
-		x += dx;
-		y += dy;
 		rad +=radd;//TODO: Set radd to be user controlled once the final visualization is complete
 		
 		

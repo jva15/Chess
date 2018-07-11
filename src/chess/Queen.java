@@ -1,5 +1,7 @@
 package src.chess;
 
+import java.awt.event.ActionEvent;
+
 public class Queen extends Actor {
 
 	public Queen() {
@@ -12,6 +14,11 @@ public class Queen extends Actor {
 		I_index_x=ID=2;
 		I_index_y=fac;
 	}
-	
+	public void actionPerformed(ActionEvent e) {
+		
+		
+		
+		
+	}
 
 }

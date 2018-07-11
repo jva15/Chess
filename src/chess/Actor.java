@@ -23,9 +23,9 @@ public class Actor extends JButton{//extend button
 	
 	
 	//image access info  
-	int pixellength=27;
-	int pixelheight=38;
-	int I_index_x,I_index_y;
+	int pixellength=27;//
+	int pixelheight=38;//
+	int I_index_x,I_index_y;//sprite selectors for the image file
 	public static String imagefile="chess_pieces.png";
 	public static BufferedImage image;
 	public static boolean imageisset=false;
@@ -50,6 +50,7 @@ public class Actor extends JButton{//extend button
 			I_index_x=I_index_y=0;
 			highlighted=false;
 	}
+	//create actor and associate to the cell
 	Actor(Node cell,int fac)
 	{
 		this();
@@ -65,7 +66,7 @@ public class Actor extends JButton{//extend button
 		currentcell.actor=null;
 	
 	}
-	
+	//set offset to the lower left corner of sprite
 	public void setatoffset(int ox, int oy) {
 		this.xoffset=ox;
 		this.yoffset=oy-ysize;
@@ -98,7 +99,7 @@ public class Actor extends JButton{//extend button
 	}
 	
 	
-	public void actionPerformed(ActionEvent e) {
+public void actionPerformed(ActionEvent e) {
 		
 		
 		

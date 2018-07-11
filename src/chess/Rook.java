@@ -1,5 +1,7 @@
 package src.chess;
 
+import java.awt.event.ActionEvent;
+
 public class Rook extends Actor {
 
 	public Rook() {
@@ -13,4 +15,10 @@ public class Rook extends Actor {
 		I_index_y=fac;
 	}
 
+	public void actionPerformed(ActionEvent e) {
+		
+		
+		
+		
+	}
 }

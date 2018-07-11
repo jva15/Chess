@@ -1,5 +1,7 @@
 package src.chess;
 
+import java.awt.event.ActionEvent;
+
 public class Pawn extends Actor {
 
 	public Pawn() {
@@ -14,4 +16,10 @@ public class Pawn extends Actor {
 	}
 	
 
+	public void actionPerformed(ActionEvent e) {
+		
+		
+		
+		
+	}
 }

@@ -1,5 +1,7 @@
 package src.chess;
 
+import java.awt.event.ActionEvent;
+
 public class Bishop extends Actor {
 
 	public Bishop() {
@@ -11,6 +13,12 @@ public class Bishop extends Actor {
 		super(cell, fac);
 		I_index_x=ID=3;
 		I_index_y=fac;
+	}
+	public void actionPerformed(ActionEvent e) {
+		
+		
+		
+		
 	}
 
 }
