@@ -32,8 +32,8 @@ public class Actor extends JButton{//extend button
 	
 	//frame draw info
 	int xoffset=0,yoffset=0;
-	int xsize=140;
-	int ysize=(int)(140*3.3);
+	int xsize=70;
+	int ysize=(int)(70*2);
 	boolean highlighted;
 	
 	Actor(){
@@ -41,11 +41,11 @@ public class Actor extends JButton{//extend button
 		{
 			try {
 				imageisset=true;
-				image=ImageIO.read(new File(System.getProperty("user.dir")+"\\bin\\src\\chess\\" + imagefile));
+				image=ImageIO.read(new File(System.getProperty("user.dir")+"\\src\\chess\\" + imagefile));
 			}catch(IOException e)
 			{
 				imageisset=false;
-				System.out.println("can't load "+ System.getProperty("user.dir")+"\\bin\\src\\chess\\"+imagefile);}
+				System.out.println("can't load "+ System.getProperty("user.dir")+"\\src\\chess\\"+imagefile);}
 		}
 			I_index_x=I_index_y=0;
 			highlighted=false;
@@ -66,6 +66,7 @@ public class Actor extends JButton{//extend button
 		currentcell.actor=null;
 	
 	}
+	public int GetY() {return yoffset;}
 	//set offset to the lower left corner of sprite
 	public void setatoffset(int ox, int oy) {
 		this.xoffset=ox;
@@ -74,7 +75,11 @@ public class Actor extends JButton{//extend button
 	
 	public void updatebycell()
 	{
-		setatoffset(currentcell.Virtualoffsetx,currentcell.Virtualoffsety);
+		int offx;
+		if(currentcell.cellsize>xsize) offx=currentcell.Virtualoffsetx+(currentcell.cellsize/2-(xsize/2));
+		else offx = currentcell.Virtualoffsetx-((xsize/2)-currentcell.cellsize/2);
+		
+		setatoffset(offx,currentcell.Virtualoffsety);
 	}
 	
 	public void setCell(Node cell) {

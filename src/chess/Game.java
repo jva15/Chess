@@ -118,7 +118,6 @@ class GridPanel extends JPanel implements ActionListener
 	   timer = new Timer(delay, this);//refresh timer
 	   cellgrid=Init_NodeAr(cellgrid,gsize);
 	   timer.start();		// start the timer
-
 	   Actors=new Actor[8*4];
 	   Populate_board();
 		
@@ -167,7 +166,7 @@ class GridPanel extends JPanel implements ActionListener
 
 		//unrotate it since Actors use raw coords to store post rotation
 		g2d.rotate(Math.toRadians(-rad),centerpoint[0],centerpoint[1]);
-		//g2d.scale(1, 3.33);		
+		g2d.scale(1, 3.33);		
 		
 		//draw actors
 		for(int i=0;i<Actors.length;i++)
@@ -262,7 +261,7 @@ class GridPanel extends JPanel implements ActionListener
 			ypof=y+j*(cellsize+cellspace);
 			
 			nodeArr[i][j].Virtualoffsetx=focalpointx+rotoffx(ypof-focalpointy,xpof-focalpointx,Math.toRadians(rad));
-			nodeArr[i][j].Virtualoffsety=(int)((focalpointy+rotoffy(ypof-focalpointy,xpof-focalpointx,Math.toRadians(rad)))+(int)(cellsize/2));
+			nodeArr[i][j].Virtualoffsety=(int)(((focalpointy+rotoffy(ypof-focalpointy,xpof-focalpointx,Math.toRadians(rad))+(int)(cellsize/2)))*0.3);
 		}	
 	}
 	
