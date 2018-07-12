@@ -36,6 +36,9 @@ public class Actor extends JButton{//extend button
 	int ysize=(int)(70*2);
 	boolean highlighted;
 	
+	public void highlightTest()
+	{}
+	
 	Actor(){
 		if(!imageisset)
 		{
@@ -58,7 +61,7 @@ public class Actor extends JButton{//extend button
 		setatoffset(cell.Virtualoffsetx,cell.Virtualoffsety);
 		factionID=fac;
 		cell.actor=this;
-
+		
 	}
 	public void kill()
 	{
@@ -86,6 +89,7 @@ public class Actor extends JButton{//extend button
 	
 	public void setCell(Node cell) {
 		currentcell=cell;
+		currentcell.occupied = true;
 	}
 	
 	public void setoffset(int ox,int oy) {

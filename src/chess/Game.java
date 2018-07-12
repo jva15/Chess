@@ -60,12 +60,12 @@ class GridPanel extends JPanel implements ActionListener
 	private final int x = 0;//dont touch these...	
 	private final int y = 0;//dont touch these...
 	
-	public int transx=300;//touch these for moving the gride
+	public int transx=300;//touch these for moving the grid
 	public int transy=300;//touch these for moving the grid
 	private int cellsize = 150;	// cell size on screen
 	private int cellspace= 0;//15; // space between the cells
-	private double rad = 00; // current view angle
-	private double radd =4;// 0.1/2; // change in view angle
+	private double rad = 0;// current view angle
+	private double radd =0.1;// 0.1/2; // change in view angle
 	private int gsize=8;//number of cells(this is then squared)
 
 	//int center=x+(cellsize+cellspace)*gsize/2-cellspace;//
@@ -125,7 +125,7 @@ class GridPanel extends JPanel implements ActionListener
 	   Actors=new Actor[8*4];
 	   Populate_board();
 		
-	  
+	  Actors[0].highlightTest();  //tests highlight - delete before release
 	   
 	}
 
@@ -236,9 +236,10 @@ class GridPanel extends JPanel implements ActionListener
 	//sets the pieces on the board
 	public void Populate_board() {
 		//order placed affects 
+		Actors[0]=new Rook(cellgrid[4][4],0);//test piece
 		
 		//add white pieces
-		Actors[0]=new Rook(cellgrid[0][0],0);//white rook1
+		//Actors[0]=new Rook(cellgrid[0][0],0);//white rook1
 		Actors[1]=new Rook(cellgrid[7][0],0);//white rook2
 		Actors[2]=new Knight(cellgrid[1][0],0);//white Knight1
 		Actors[3]=new Knight(cellgrid[6][0],0);//white Knight2
