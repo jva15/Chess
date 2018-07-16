@@ -40,7 +40,7 @@ public class Game
 	   //frame.add(sp);
 	   
 	   frame.add( gp );
-	   frame.setSize( 300*3, 300*3 ); // set frame size
+	   frame.setSize( 300*6, 300*6 ); // set frame size
 	   frame.setVisible( true ); // display frame
 	} // end main
 	
@@ -50,44 +50,44 @@ public class Game
 
 
 
-class GridPanel extends JPanel implements ActionListener
+class GridPanel extends JLayeredPane implements ActionListener
 {
 	public Actor[] Actors;//list of actors
 	//TODO: Turn into a vector (or similar data structure) so that deletion is easier to do.
 	
 	private int delay = 10;//delay for the FPS timer
 	protected Timer timer; //FPS timer
-	private final int x = 0;//dont touch these...	
-	private final int y = 0;//dont touch these...
+	private final int x =0;//base offset	don't touch
+	private final int y = 0;//base offset don't touch
+	public static int transx=300;
+	public static int transy=400;
 	
-	public int transx=300;//touch these for moving the gride
-	public int transy=300;//touch these for moving the grid
+	
+	
 	private int cellsize = 150;	// cell size on screen
 	private int cellspace= 0;//15; // space between the cells
-	private double rad = 00; // current view angle
-	private double radd =4;// 0.1/2; // change in view angle
+	private double rad = 0; // current view angle
+	private double radd =0.1; // change in view angle
 	private int gsize=8;//number of cells(this is then squared)
 
-	//int center=x+(cellsize+cellspace)*gsize/2-cellspace;//
 	int[] centerpoint=new int[2];//same as above just in point form
 	int[] tp =new int[2];//just a temporary pointer
 	int focalpointx;//used to store the center point of actors to be rotated
 	int focalpointy;
-	
 
+	static Actor selected_piece = null;
+	int state;//not yet implimented
+			//0 nothing should be selectable
+			//1 no item selected, only the pieces can be selected
+			//2 item selected, only tiles can be selected
 	
 	
 	private Node cellgrid[][];  //cell grid
-	
-	
-	
 	private int dx = 0;		// reserved for player gridmovement
 	private int dy = 0;		// increment amount (y coord)
 	
-	
-	
-	
-	
+	public static boolean inputenabled=true;
+	int currentturn =0;
 	
 	
 	
@@ -106,49 +106,121 @@ class GridPanel extends JPanel implements ActionListener
 		    public void mouseClicked(MouseEvent e) {
 		    	//get the mouse coords
 		    	
+		    	Actor Piece;
+		    	Node cell;
 		    	int[] mousepointer=new int[2];
-		    	mousepointer[0]=e.getX()-transx;
-		    	mousepointer[1]=(int)((e.getY()-transy)*3.3);//the calculation is grid based, so i morph the y so it simulates a reverted version of the grid(before the y shrink)
 		    	
-		    	tp=rotoffc(centerpoint,mousepointer,Math.toRadians(rad));//rotate the mouse coords around the center point so that the grid is calculated as if straight.
-		    	
-		    	tp[0]=(int)((tp[0])/cellsize);//
-		    	tp[1]=(int)((tp[1])/cellsize);//
-		    	if(tp[0]>=0&&tp[1]>=0)
-		    	cellgrid[tp[0]%gsize][tp[1]%gsize].highlighted=true;//highlights the cell, but this is just a place holder
+		    	if(inputenabled)
+		    	{
+			    	inputenabled=false;
+			    	mousepointer[0]=e.getX();
+			    	mousepointer[1]=(int)((e.getY()));//the calculation is grid based, so i morph the y so it simulates a reverted version of the grid(before the y shrink)
+			    	System.out.println(e.getX()+"  "+e.getY());
+			    	System.out.println(getComponentAt(mousepointer[0],(int)(mousepointer[1])).getClass().getName());
+			    	
+			    	if((getComponentAt(mousepointer[0],(int)(mousepointer[1])).getClass().getName().equals("src.chess.GridPanel")))
+			    	{//you selected the grid panel
+			    		mousepointer[1]=(int)((mousepointer[1]-transy)/0.3);
+			    		mousepointer[0]-= transx;
+				    	tp=rotoffc(centerpoint,mousepointer,Math.toRadians(rad));//rotate the mouse coords around the center point so that the grid is calculated as if straight.
+				    	tp[0]=(int)((tp[0])/cellsize);//
+				    	tp[1]=(int)((tp[1])/cellsize);//
+				    	if(tp[0]>=0&&tp[0]<gsize&&tp[1]>=0&&tp[1]<gsize)
+				    	{
+				    		cell=cellgrid[tp[0]][tp[1]];
+				    		cell.highlighted=true;
+				    		
+				    		//int factID=selected_piece.factionID;
+				    		//if(factID==currentturn&&//if your previouspiece is selected
+				    		//   cell.highlighted==true)//highlighted
+				    		//{
+				    		//	selected_piece.moveTo(cell);
+				    		//	switchturns();
+				    		//}
+				    		
+				    	
+				    	}
+				    	
+			    	}
+			    	else //actor selected
+			    	{
+
+		    			Piece=(Actor)getComponentAt(mousepointer[0],(int)(mousepointer[1]));
+		    			Piece.currentcell.highlighted=true;
+		    			if(Piece.factionID==currentturn) select(Piece);
+				    	else if(Piece.currentcell.highlighted) //piece is not yours
+		    			{
+				    		
+		    				if(selected_piece!=null)
+		    				{
+		    					//can't unselect before a move otherwise, selected piece can't call moveTo()
+		    					movehighlight(selected_piece, false);
+		    					selected_piece.moveTo(Piece.currentcell);
+		    					selected_piece=null;
+		    					switchturns();
+		    				}
+		    				//otherwise do nothing
+		    			}
+			    	}
+			    	inputenabled=true;
+		    	}	
 		    }
 		    
 		});
 	   timer = new Timer(delay, this);//refresh timer
 	   cellgrid=Init_NodeAr(cellgrid,gsize);
+	   
 	   timer.start();		// start the timer
 	   Actors=new Actor[8*4];
 	   Populate_board();
-		
 	  
+	   
+	   
 	   
 	}
 
+/*-------------Selection-functions------------------*/
+	
+	public void movehighlight(Actor Piece,boolean highlighted)
+	{
+		//TODO call the Actor Highlight function	
+	}
+	//selection functions
+	protected void unselectpiece() {
+		movehighlight(selected_piece,false);
+		selected_piece=null;
+	}
+
+
+	protected void select(Actor piece) {
+		if(selected_piece!=null)unselectpiece();
+		movehighlight(piece,true);
+		selected_piece=piece;
+	}
+	protected void switchturns() {
+		currentturn=(currentturn+1)%2;
+	}
+
+
+/*-------------Rendering------------------*/
 
 	public void actionPerformed(ActionEvent e)
 	// will run when the timer fires
-	{	
+	{
 		repaint();
 	}
 	
-	// draw Polygons and arcs
+	// draws the stuff
 	public void paintComponent( Graphics g )
 	{
 	   super.paintComponent( g ); // call superclass's paintComponent 
 	   Rotate_NodeArray(cellgrid);// update the virtual offsets
-	   	   
+	   
 	   Graphics2D g2d = (Graphics2D)g;
 	    //x=y=getHeight()/2;
 	    dx=dy=0;
 	    	    
-		
-		
-		//perform the transformation for the 3d effect
+	    //perform the transformation for the 3d effect
 	    g2d.translate(transx, transy);
 		g2d.scale(1, 0.3);		
 		g2d.rotate(Math.toRadians(rad),centerpoint[0],centerpoint[1]);
@@ -163,26 +235,29 @@ class GridPanel extends JPanel implements ActionListener
 			if(cellgrid[i][j].highlighted==true) g2d.setColor(Color.YELLOW);//highlighting
 			else if(RoB==1)			g2d.setColor(Color.red);
 			else 				g2d.setColor(Color.black);	
-
-			g2d.draw(cellgrid[i][j].poly);
-			g2d.fill(cellgrid[i][j].poly);
+			Polygon poly= cellgrid[i][j].poly;
+			
+			//poly.translate(transx, transy);
+			g2d.draw(poly);
+			g2d.fill(poly);
+			//poly.translate(-transx, -transy);
 		}
 
 		//unrotate it since Actors use raw coords to store post rotation
-		g2d.rotate(Math.toRadians(-rad),centerpoint[0],centerpoint[1]);
-		g2d.scale(1, 3.3);		
 		
-		//stop the timer and sort the actors
-		timer.stop();
-		Arrays.sort(Actors, Comparator.comparing(Actor::GetY));//this method is probably not the most optimal.
-		timer.restart();
-		//Warning: be careful with the above 3 lines, can cause crashing or even cause some serious file corruption to ensue
+		g2d.rotate(Math.toRadians(-rad),centerpoint[0],centerpoint[1]);
+		g2d.scale(1, 1/0.3);		
+		g2d.translate(-transx, -transy);
+		
 		
 		//draw actors
 		for(int i=0;i<Actors.length;i++)
 		{
+			
 			Actors[i].updatebycell();//snap the actor to the new coords
+			setLayer(Actors[i], Actors[i].yoffset);
 			Actors[i].Drawframe(g2d);//draw the actor
+			
 		}
 		
 		rad +=radd;//TODO: Set radd to be user controlled once the final visualization is complete
@@ -192,7 +267,10 @@ class GridPanel extends JPanel implements ActionListener
 	
 	
 	
-	/*--------------functions------------------*/
+	
+
+/*-------------initialization------------------*/
+
 	
 	//creates the node array
 	public Node[][] Init_NodeAr(Node[][] nodeArr,int NAsize)
@@ -208,7 +286,6 @@ class GridPanel extends JPanel implements ActionListener
 		{
 			int pxoffset=x+i*(cellsize+cellspace);
 			int pyoffset=y+j*(cellsize+cellspace);
-			
 			nodeArr[i][j]=new Node(pxoffset,pyoffset,cellsize,true);
 		}
 	
@@ -258,10 +335,15 @@ class GridPanel extends JPanel implements ActionListener
 		Actors[29]=new Bishop(cellgrid[5][7],1);//black Bishop2
 		Actors[30]=new King(cellgrid[4][7],1);//black King
 		Actors[31]=new Queen(cellgrid[3][7],1);//black Queen
+		for(int i=0;i<8*4;i++) add(Actors[i]);
 		
 		
 	}
 	
+	
+
+/*-------------Rotation manipulation------------------*/
+
 	public void Rotate_NodeArray(Node[][] nodeArr) 
 	{
 		int xpof,ypof;
@@ -270,8 +352,8 @@ class GridPanel extends JPanel implements ActionListener
 			xpof=x+i*(cellsize+cellspace);
 			ypof=y+j*(cellsize+cellspace);
 			
-			nodeArr[i][j].Virtualoffsetx=focalpointx+rotoffx(ypof-focalpointy,xpof-focalpointx,Math.toRadians(rad));
-			nodeArr[i][j].Virtualoffsety=(int)(((focalpointy+rotoffy(ypof-focalpointy,xpof-focalpointx,Math.toRadians(rad))+(int)(cellsize/2)))*0.3);
+			nodeArr[i][j].Virtualoffsetx=transx+focalpointx+rotoffx(ypof-focalpointy,xpof-focalpointx,Math.toRadians(rad));
+			nodeArr[i][j].Virtualoffsety=(int)(transy)+(int)(((focalpointy+rotoffy(ypof-focalpointy,xpof-focalpointx,Math.toRadians(rad))+(int)(cellsize/2)))*0.3);
 		}	
 	}
 	
