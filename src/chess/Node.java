@@ -8,8 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.Timer;
 import javax.swing.*;
 
-//TODO: Extend 
-public class Node extends  Button {
+public class Node {
 	
 	public int xoffset,yoffset,Virtualoffsetx,Virtualoffsety;
 	public int cellsize;
@@ -18,6 +17,7 @@ public class Node extends  Button {
 	public Node[] adgNodes;
 	public int visited;//
 	public boolean occupied,highlighted;
+	public int[] attackrisk;//counter for attackrisk
 	
 	public Node() {
 		// TODO Auto-generated constructor stub
@@ -29,15 +29,20 @@ public class Node extends  Button {
 		xoffset=yoffset=0;
 		cellsize=10;
 		highlighted=false;
+		attackrisk=new int[2];
 		
-		addMouseListener(new MouseAdapter() {
-		    @Override
-		    public void mouseClicked(MouseEvent e) {
-		        highlighted=true;
-		        System.out.println("Printed ("+ e.getX() +"),("+e.getY()+")");
-		    }
-		});
+		
 	}
+	
+	public void setAttackRisk(boolean inrange,int facID)
+	{
+		/*TODO: use inrange to determine whether to increment or decriment attackrisk[facID]
+		 * forexample:
+		 * if attackrisk[0]=2; that means player 1 has 2 pieces that can hit that spot
+		 * 
+		 * */
+	}
+	
 	public Node(int x,int y)
 	{
 		this();
@@ -61,7 +66,9 @@ public class Node extends  Button {
 	{
 		cellsize=celsize;
 	}
-	//note: maybe make it variable
+	
+	
+	//gets the cell ready for drawing
 	public void setcell(int x, int y)
 	{
 		xoffset=x;
@@ -87,11 +94,6 @@ public class Node extends  Button {
 		poly=new Polygon( pay , pax , 4);
 
 	}
-	
 
-	
-	
-	
-	
 }
 
