@@ -59,15 +59,15 @@ class GridPanel extends JLayeredPane implements ActionListener
 	protected Timer timer; //FPS timer
 	private final int x =0;//base offset	don't touch
 	private final int y = 0;//base offset don't touch
-	public static int transx=300;
-	public static int transy=400;
+	public static int transx=100;
+	public static int transy=200;
 	
 	
 	
 	private int cellsize = 150;	// cell size on screen
 	private int cellspace= 0;//15; // space between the cells
-	private double rad = 0; // current view angle
-	private double radd =0.1; // change in view angle
+	private double rad = 145; // current view angle
+	private double radd =0.0; // change in view angle
 	private int gsize=8;//number of cells(this is then squared)
 
 	int[] centerpoint=new int[2];//same as above just in point form
@@ -98,75 +98,10 @@ class GridPanel extends JLayeredPane implements ActionListener
 		focalpointx=x+(int)(((centerpoint[0]-x)*2-(cellsize))/2);//used to store the center point of actors to be rotated
 		focalpointy=y+(int)(((centerpoint[1]-y)*2-(cellsize))/2);//
 		
+	
 		
 		
-		//this is where selection of items occures
-		addMouseListener(new MouseAdapter() {
-		    @Override
-		    public void mouseClicked(MouseEvent e) {
-		    	//get the mouse coords
-		    	
-		    	Actor Piece;
-		    	Node cell;
-		    	int[] mousepointer=new int[2];
-		    	
-		    	if(inputenabled)
-		    	{
-			    	inputenabled=false;
-			    	mousepointer[0]=e.getX();
-			    	mousepointer[1]=(int)((e.getY()));//the calculation is grid based, so i morph the y so it simulates a reverted version of the grid(before the y shrink)
-			    	System.out.println(e.getX()+"  "+e.getY());
-			    	System.out.println(getComponentAt(mousepointer[0],(int)(mousepointer[1])).getClass().getName());
-			    	
-			    	if((getComponentAt(mousepointer[0],(int)(mousepointer[1])).getClass().getName().equals("src.chess.GridPanel")))
-			    	{//you selected the grid panel
-			    		mousepointer[1]=(int)((mousepointer[1]-transy)/0.3);
-			    		mousepointer[0]-= transx;
-				    	tp=rotoffc(centerpoint,mousepointer,Math.toRadians(rad));//rotate the mouse coords around the center point so that the grid is calculated as if straight.
-				    	tp[0]=(int)((tp[0])/cellsize);//
-				    	tp[1]=(int)((tp[1])/cellsize);//
-				    	if(tp[0]>=0&&tp[0]<gsize&&tp[1]>=0&&tp[1]<gsize)
-				    	{
-				    		cell=cellgrid[tp[0]][tp[1]];
-				    		cell.highlighted=true;
-				    		
-				    		//int factID=selected_piece.factionID;
-				    		//if(factID==currentturn&&//if your previouspiece is selected
-				    		//   cell.highlighted==true)//highlighted
-				    		//{
-				    		//	selected_piece.moveTo(cell);
-				    		//	switchturns();
-				    		//}
-				    		
-				    	
-				    	}
-				    	
-			    	}
-			    	else //actor selected
-			    	{
-
-		    			Piece=(Actor)getComponentAt(mousepointer[0],(int)(mousepointer[1]));
-		    			Piece.currentcell.highlighted=true;
-		    			if(Piece.factionID==currentturn) select(Piece);
-				    	else if(Piece.currentcell.highlighted) //piece is not yours
-		    			{
-				    		
-		    				if(selected_piece!=null)
-		    				{
-		    					//can't unselect before a move otherwise, selected piece can't call moveTo()
-		    					movehighlight(selected_piece, false);
-		    					selected_piece.moveTo(Piece.currentcell);
-		    					selected_piece=null;
-		    					switchturns();
-		    				}
-		    				//otherwise do nothing
-		    			}
-			    	}
-			    	inputenabled=true;
-		    	}	
-		    }
-		    
-		});
+		
 	   timer = new Timer(delay, this);//refresh timer
 	   cellgrid=Init_NodeAr(cellgrid,gsize);
 	   
@@ -314,8 +249,10 @@ class GridPanel extends JLayeredPane implements ActionListener
 	public void Populate_board() {
 		//order placed affects 
 		
+		Actors[0]=new Rook(cellgrid[3][3],0);//white rook1 -- ONLY FOR TESTING HIGHLIGHTING
+		
 		//add white pieces
-		Actors[0]=new Rook(cellgrid[0][0],0);//white rook1
+		//Actors[0]=new Rook(cellgrid[0][0],0);//white rook1
 		Actors[1]=new Rook(cellgrid[7][0],0);//white rook2
 		Actors[2]=new Knight(cellgrid[1][0],0);//white Knight1
 		Actors[3]=new Knight(cellgrid[6][0],0);//white Knight2
