@@ -53,7 +53,6 @@ public class Game
 class GridPanel extends JLayeredPane implements ActionListener
 {
 	public Actor[] Actors;//list of actors
-	//TODO: Turn into a vector (or similar data structure) so that deletion is easier to do.
 	
 	private int delay = 10;//delay for the FPS timer
 	protected Timer timer; //FPS timer
@@ -64,7 +63,7 @@ class GridPanel extends JLayeredPane implements ActionListener
 	
 	
 	
-	private int cellsize = 150;	// cell size on screen
+	private int cellsize = 100;	// cell size on screen
 	private int cellspace= 0;//15; // space between the cells
 	private double rad = 0; // current view angle
 	private double radd =0.1; // change in view angle
@@ -130,15 +129,18 @@ class GridPanel extends JLayeredPane implements ActionListener
 				    		cell=cellgrid[tp[0]][tp[1]];
 				    		cell.highlighted=true;
 				    		
-				    		//int factID=selected_piece.factionID;
-				    		//if(factID==currentturn&&//if your previouspiece is selected
-				    		//   cell.highlighted==true)//highlighted
-				    		//{
-				    		//	selected_piece.moveTo(cell);
-				    		//	switchturns();
-				    		//}
-				    		
-				    	
+				    		if(selected_piece!=null)
+				    		{
+					    		
+					    		int factID=selected_piece.factionID;
+					    		if(factID==currentturn&&//if your previouspiece is selected
+					    		   cell.highlighted==true)//highlighted
+					    		{
+					    			selected_piece.moveTo(cell);
+					    			switchturns();
+					    		}
+					    		
+				    		}
 				    	}
 				    	
 			    	}
@@ -198,7 +200,7 @@ class GridPanel extends JLayeredPane implements ActionListener
 		selected_piece=piece;
 	}
 	protected void switchturns() {
-		currentturn=(currentturn+1)%2;
+		//currentturn=(currentturn+1)%2;
 	}
 
 
@@ -347,6 +349,7 @@ class GridPanel extends JLayeredPane implements ActionListener
 	public void Rotate_NodeArray(Node[][] nodeArr) 
 	{
 		int xpof,ypof;
+		
 		for(int i=0;i<nodeArr.length;i++)for(int j=0;j<nodeArr.length;j++)
 		{
 			xpof=x+i*(cellsize+cellspace);
@@ -355,6 +358,7 @@ class GridPanel extends JLayeredPane implements ActionListener
 			nodeArr[i][j].Virtualoffsetx=transx+focalpointx+rotoffx(ypof-focalpointy,xpof-focalpointx,Math.toRadians(rad));
 			nodeArr[i][j].Virtualoffsety=(int)(transy)+(int)(((focalpointy+rotoffy(ypof-focalpointy,xpof-focalpointx,Math.toRadians(rad))+(int)(cellsize/2)))*0.3);
 		}	
+		
 	}
 	
 	
