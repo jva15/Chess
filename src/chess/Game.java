@@ -62,8 +62,8 @@ class GridPanel extends JLayeredPane implements ActionListener
 	public static int transy=400;
 	
 	
-	
-	private int cellsize = 100;	// cell size on screen
+	public static double gridratio=1; // not ready yet
+	private int cellsize = (int)(150*gridratio);	// cell size on screen
 	private int cellspace= 0;//15; // space between the cells
 	private double rad = 0; // current view angle
 	private double radd =0.1; // change in view angle
@@ -338,6 +338,7 @@ class GridPanel extends JLayeredPane implements ActionListener
 		Actors[30]=new King(cellgrid[4][7],1);//black King
 		Actors[31]=new Queen(cellgrid[3][7],1);//black Queen
 		for(int i=0;i<8*4;i++) add(Actors[i]);
+		
 		
 		
 	}

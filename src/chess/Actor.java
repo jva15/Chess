@@ -21,20 +21,31 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 public class Actor extends JPanel implements ActionListener{//extend button
+
+	public static int TotalImages;
+	public static String[] imagefilelist= {"chess_pieces.png","test_character.png"};
+	public static BufferedImage[] imageset;
+	public static boolean imageisset=false;
+	
+	
+	
 	int ID;
 	int factionID;//0: player 1, 1 player 2
 	Node currentcell;//keep this in mind when changing the Actors position.
 	boolean Active;//
 	
+	
 	//image access info  
 	int pixellength=27;//
 	int pixelheight=38;//
-	int I_index_x,I_index_y;//sprite selectors for the image file
-	public static String imagefile="chess_pieces.png";
-	public static BufferedImage image;
-	public static boolean imageisset=false;
+	int imagefileindex=0;//imagefileindex
+	int I_index_x,I_index_y;//sprite selectors
+	public String imagefile="chess_pieces.png";
+	
+	
 	
 	//frame draw info
+	int ratio=1;
 	int xoffset=0,yoffset=0;
 	int xsize=70;
 	int ysize=(int)(70*2);
@@ -45,15 +56,24 @@ public class Actor extends JPanel implements ActionListener{//extend button
 	
 	Actor(){
 		super();
+		
 		if(!imageisset)
 		{
-			try {
-				imageisset=true;
-				image=ImageIO.read(new File(System.getProperty("user.dir")+"\\src\\chess\\" + imagefile));
-			}catch(IOException e)
+			TotalImages=imagefilelist.length;
+			imageset= new BufferedImage[TotalImages];
+			
+			for(int i=0;i<TotalImages;i++)
 			{
-				imageisset=false;
-				System.out.println("can't load "+ System.getProperty("user.dir")+"\\src\\chess\\"+imagefile);}
+				
+				imagefile=imagefilelist[i];
+				try {
+					imageisset=true;
+					imageset[i]=ImageIO.read(new File(System.getProperty("user.dir")+"\\src\\chess\\" + imagefile));
+				}catch(IOException e)
+				{
+					imageisset=false;
+					System.out.println("can't load "+ System.getProperty("user.dir")+"\\src\\chess\\"+imagefile);}
+			}
 		}
 			I_index_x=I_index_y=0;
 			highlighted=false;
@@ -79,7 +99,7 @@ public class Actor extends JPanel implements ActionListener{//extend button
 	//set offset to the lower left corner of sprite
 	public void setatoffset(int ox, int oy) {
 		this.xoffset=ox;
-		this.yoffset=oy-ysize;
+		this.yoffset=oy-(int)(ysize);
 		
 	}
 	
@@ -173,7 +193,7 @@ public class Actor extends JPanel implements ActionListener{//extend button
 		super.paintComponent( g );
 		Graphics2D g2d = (Graphics2D)g;
 		
-		g2d.drawImage(image,
+		g2d.drawImage(imageset[imagefileindex],
 			       0,0,xsize,ysize,//
 				   //xoffset,yoffset,xoffset+xsize, yoffset+ysize,//
 			       pixellength*I_index_x, pixelheight*I_index_y, pixellength*I_index_x+pixellength, pixelheight*I_index_y+pixelheight,
