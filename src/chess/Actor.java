@@ -106,12 +106,13 @@ public class Actor extends JPanel implements ActionListener{//extend button
 	public void setCell(Node cell) {
 		currentcell=cell;
 		currentcell.actor=this;
+		currentcell.occupied=true;
 	}
 	public void unsetCell()
 	{
 		currentcell.actor=null;
 		currentcell=null;
-		
+		currentcell.occupied=false;
 	}
 	public void kill()//TODO: check if it works; delete the comment below if it no longer applies
 	{
