@@ -14,11 +14,9 @@ public class Queen extends Actor {
 		I_index_x=ID=2;
 		I_index_y=fac;
 	}
-	public void actionPerformed(ActionEvent e) {
-		
-		
-		
-		
+	public void highlight(boolean b) 
+	{
+		super.lineHighlighter(currentcell, b);
+		super.diagonalHighlighter(currentcell, b);
 	}
-
 }
