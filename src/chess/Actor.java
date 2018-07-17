@@ -24,7 +24,7 @@ public class Actor extends JPanel implements ActionListener{//extend button
 	int ID;
 	int factionID;//0: player 1, 1 player 2
 	Node currentcell;//keep this in mind when changing the Actors position.
-	boolean Active;//TODO make it so Active is used to indicate whether or an item is rendered
+	boolean Active;//
 	
 	//image access info  
 	int pixellength=27;//
@@ -87,12 +87,14 @@ public class Actor extends JPanel implements ActionListener{//extend button
 	
 	public void updatebycell()
 	{
-		int offx;
-		if(currentcell.cellsize>xsize) offx=currentcell.Virtualoffsetx+(currentcell.cellsize/2-(xsize/2));
-		else offx = currentcell.Virtualoffsetx-((xsize/2)-currentcell.cellsize/2);
-		setatoffset(offx,currentcell.Virtualoffsety);
-		setBounds(offx,currentcell.Virtualoffsety-ysize,xsize,ysize);
-		
+		if (currentcell!=null);
+		{
+			int offx;
+			if(currentcell.cellsize>xsize) offx=currentcell.Virtualoffsetx+(currentcell.cellsize/2-(xsize/2));
+			else offx = currentcell.Virtualoffsetx-((xsize/2)-currentcell.cellsize/2);
+			setatoffset(offx,currentcell.Virtualoffsety);
+			setBounds(offx,currentcell.Virtualoffsety-ysize,xsize,ysize);
+		}
 	}
 	public void updatebycell(int moveoffsetx,int moveoffsety)//not setup yet, but it will updates by cell, with an offset
 	{
@@ -111,8 +113,10 @@ public class Actor extends JPanel implements ActionListener{//extend button
 	public void unsetCell()
 	{
 		currentcell.actor=null;
-		currentcell=null;
 		currentcell.occupied=false;
+		currentcell=null;
+		
+		
 	}
 	public void kill()//TODO: check if it works; delete the comment below if it no longer applies
 	{
@@ -143,9 +147,9 @@ public class Actor extends JPanel implements ActionListener{//extend button
 		
 		//setRange(false);
 		//TODO: run function to dehighlight potential move here here.
-		//unsetCell();
-		//if (newcell.actor!=null)newcell.actor.kill();
-		//setCell(newcell);
+		unsetCell();
+		if (newcell.actor!=null)newcell.actor.kill();
+		setCell(newcell);
 		//setRange(true);
 		
 	}
