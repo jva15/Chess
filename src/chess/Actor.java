@@ -51,7 +51,7 @@ public class Actor extends JPanel implements ActionListener{//extend button
 	int ysize=(int)(70*2);
 	boolean highlighted;
 	Rectangle Boundingbox;//cause setBounds took too much processing 
-	
+	boolean set_to_a_cell=false;
 	
 	
 	Actor(){
@@ -85,15 +85,31 @@ public class Actor extends JPanel implements ActionListener{//extend button
 			//setVisible(false);
 	}
 	//create actor and associate to the cell
-	Actor(Node cell,int fac)
+	Actor(int fac)
 	{
 		this();
-		setCell(cell);
-		setatoffset(cell.Virtualoffsetx,cell.Virtualoffsety);
 		factionID=fac;
-		cell.actor=this;
+		Active=false;
+		set_to_a_cell=false;
+	}
+	
+	Actor(Node cell,int fac)
+	{
+		this(fac);
+		setCell(cell);
+		//setatoffset(cell.Virtualoffsetx,cell.Virtualoffsety);
 		Active=true;
 	}
+	public void setup() {
+		
+		
+	}/*
+	public void addtogridpanel(GridPanel GP,int gx,int gy)
+	{
+		GP.cellgrid
+		
+	}*/
+	
 	
 	public int GetY() {return yoffset;}
 	//set offset to the lower left corner of sprite
@@ -129,13 +145,15 @@ public class Actor extends JPanel implements ActionListener{//extend button
 		currentcell=cell;
 		currentcell.actor=this;
 		currentcell.occupied=true;
+		set_to_a_cell=true;
+		updatebycell();
 	}
 	public void unsetCell()
 	{
 		currentcell.actor=null;
 		currentcell.occupied=false;
 		currentcell=null;
-		
+		set_to_a_cell=false;
 		
 	}
 	public void kill()//TODO: check if it works; delete the comment below if it no longer applies
@@ -159,7 +177,7 @@ public class Actor extends JPanel implements ActionListener{//extend button
 	public void Drawframe(Graphics2D g2d) {
 		if(Active)
 		{	
-			updatebycell();
+			if(set_to_a_cell) updatebycell();
 			repaint();
 		}
 	}
