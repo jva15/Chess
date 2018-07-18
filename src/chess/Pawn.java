@@ -6,13 +6,22 @@ public class Pawn extends Actor {
 
 	public Pawn() {
 		super();
-		ID=0;
-		I_index_x=I_index_y=0;
-		
+		setupID();
+	}
+	public Pawn(int f) {
+		super(f);
+		setupID();
 	}
 	public Pawn(Node cell,int faction) {
 		super(cell,faction);
-		I_index_y=(faction%2);
+		//I_index_y=(faction%2);
+		setupID();
+	}
+	public void setupID(){
+		ID=0;
+		I_index_x=0;
+		I_index_y=factionID;
+		
 	}
 	
 
