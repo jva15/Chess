@@ -9,6 +9,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.Stack;
 import java.util.Vector;
 import java.awt.Graphics;
@@ -52,8 +53,8 @@ public class Game
 
 class GridPanel extends JLayeredPane implements ActionListener
 {
-	public Actor[] Actors;//list of actors
-	
+	//public Actor[] Actors;//list of actors
+	public LinkedList<Actor> Actors;
 	private int delay = 10;//delay for the FPS timer
 	protected Timer timer; //FPS timer
 	private final int x =0;//base offset	don't touch
@@ -66,7 +67,7 @@ class GridPanel extends JLayeredPane implements ActionListener
 	private int cellsize = (int)(150*gridratio);	// cell size on screen
 	private int cellspace= 0;//15; // space between the cells
 	private double rad = 0; // current view angle
-	private double radd =0.1; // change in view angle
+	private double radd = 0.1; // change in view angle
 	private int gsize=8;//number of cells(this is then squared)
 
 	int[] centerpoint=new int[2];//same as above just in point form
@@ -87,7 +88,8 @@ class GridPanel extends JLayeredPane implements ActionListener
 	
 	public static boolean inputenabled=true;
 	int currentturn =0;
-	
+	int Highlightvalue=255;
+	int dHighlightvalue=1;
 	
 	
 	public GridPanel() 
@@ -111,7 +113,7 @@ class GridPanel extends JLayeredPane implements ActionListener
 		    	
 		    	if(inputenabled)
 		    	{
-			    	inputenabled=false;
+			     	inputenabled=false;
 			    	mousepointer[0]=e.getX();
 			    	mousepointer[1]=(int)((e.getY()));//the calculation is grid based, so i morph the y so it simulates a reverted version of the grid(before the y shrink)
 			    	System.out.println(e.getX()+"  "+e.getY());
@@ -173,7 +175,7 @@ class GridPanel extends JLayeredPane implements ActionListener
 	   cellgrid=Init_NodeAr(cellgrid,gsize);
 	   
 	   timer.start();		// start the timer
-	   Actors=new Actor[8*4];
+	   Actors=new LinkedList<Actor>();
 	   Populate_board();
 	  
 	   
@@ -185,6 +187,7 @@ class GridPanel extends JLayeredPane implements ActionListener
 	
 	public void movehighlight(Actor Piece,boolean highlighted)
 	{
+		
 		//TODO call the Actor Highlight function	
 	}
 	//selection functions
@@ -229,15 +232,25 @@ class GridPanel extends JLayeredPane implements ActionListener
 		
 		
 		//draw the grids
+		if(Highlightvalue>=255||Highlightvalue<=0) dHighlightvalue*=-1;
+		Highlightvalue+=dHighlightvalue;
+			
 		for(int i=0;i<gsize;i++)for(int j =0;j<gsize;j++)	
 		{
 			//checkered
 			int RoB=(i+j)%2;
 			
-			if(cellgrid[i][j].highlighted==true) g2d.setColor(Color.YELLOW);//highlighting
-			else if(RoB==1)			g2d.setColor(Color.red);
-			else 				g2d.setColor(Color.black);	
-			Polygon poly= cellgrid[i][j].poly;
+			if(cellgrid[i][j].highlighted==true) 
+			{
+				if(RoB==1)g2d.setColor(new Color(255,Highlightvalue%255,0));//highlighting
+				else g2d.setColor(new Color(Highlightvalue%255,Highlightvalue%255,0));
+			}
+			else 
+			{
+				if(RoB==1)			g2d.setColor(Color.red);
+				else 				g2d.setColor(Color.black);	
+			}
+				Polygon poly= cellgrid[i][j].poly;
 			
 			//poly.translate(transx, transy);
 			g2d.draw(poly);
@@ -253,12 +266,14 @@ class GridPanel extends JLayeredPane implements ActionListener
 		
 		
 		//draw actors
-		for(int i=0;i<Actors.length;i++)
+		Actor ractor;
+		for(int i=0;i<Actors.size();i++)
 		{
 			
-			Actors[i].updatebycell();//snap the actor to the new coords
-			setLayer(Actors[i], Actors[i].yoffset);
-			Actors[i].Drawframe(g2d);//draw the actor
+			ractor=Actors.get(i);
+			ractor.updatebycell();//snap the actor to the new coords
+			setLayer(ractor, ractor.yoffset);
+			ractor.Drawframe(g2d);//draw the actor
 			
 		}
 		
@@ -317,32 +332,67 @@ class GridPanel extends JLayeredPane implements ActionListener
 		//order placed affects 
 		
 		//add white pieces
-		Actors[0]=new Rook(cellgrid[0][0],0);//white rook1
-		Actors[1]=new Rook(cellgrid[7][0],0);//white rook2
-		Actors[2]=new Knight(cellgrid[1][0],0);//white Knight1
-		Actors[3]=new Knight(cellgrid[6][0],0);//white Knight2
-		Actors[4]=new Bishop(cellgrid[2][0],0);//white Bishop1
-		Actors[5]=new Bishop(cellgrid[5][0],0);//white Bishop2
-		Actors[6]=new King(cellgrid[3][0],0);//white King
-		Actors[7]=new Queen(cellgrid[4][0],0);//white Queen
-		for(int i =0;i<8;i++) Actors[i+8]=new Pawn(cellgrid[i][1],0);//white pawns
+		//new Rook(cellgrid[0][0])
+		//addActor(Rook())
+		addPiece(new Rook(0),0,0);
+		addPiece(new Rook(0),7,0);
+		addPiece(new Knight(0),1,0);//white Knight1
+		addPiece(new Knight(0),6,0);//white Knight2
+		addPiece(new Bishop(0),2,0);//white Bishop1
+		addPiece(new Bishop(0),5,0);//white Bishop2
+		addPiece(new King(0),3,0);//white King
+		addPiece(new Queen(0),4,0);//white Queen
+		
+		for(int i =0;i<8;i++) addPiece(new Pawn(0),i,1);//white pawns
+		for(int i =0;i<8;i++) addPiece(new Pawn(1),i,6);//black pawns
 		
 		//add black pieces
-		for(int i =0;i<8;i++) Actors[i+16]=new Pawn(cellgrid[i][6],1);//black pawns		
-		Actors[24]=new Rook(cellgrid[0][7],1);//black rook1
-		Actors[25]=new Rook(cellgrid[7][7],1);//black rook2
-		Actors[26]=new Knight(cellgrid[1][7],1);//black Knight1
-		Actors[27]=new Knight(cellgrid[6][7],1);//black Knight2
-		Actors[28]=new Bishop(cellgrid[2][7],1);//black Bishop1
-		Actors[29]=new Bishop(cellgrid[5][7],1);//black Bishop2
-		Actors[30]=new King(cellgrid[4][7],1);//black King
-		Actors[31]=new Queen(cellgrid[3][7],1);//black Queen
-		for(int i=0;i<8*4;i++) add(Actors[i]);
-		
-		
-		
+		addPiece(new Rook(1),0,7);//black rook1
+		addPiece(new Rook(1),7,7);//black rook2
+		addPiece(new Knight(1),1,7);;//black Knight1
+		addPiece(new Knight(1),6,7);;//black Knight2
+		addPiece(new Bishop(1),2,7);//black Bishop1
+		addPiece(new Bishop(1),5,7);//black Bishop2
+		addPiece(new King(1),4,7);//black King
+		//addPiece(new Queen(1),3,7);//black Queen
+		//addPiece(new Pawn(cellgrid[3][7],0));//black Queen
+		//Chara chara=new Chara(cellgrid[5][5],1);
+		//addPiece(chara);
+		//chara.testanimation.start();
+		//chara.testanimation.setloop(true);
 	}
 	
+	
+	
+	
+	public void addPiece(Actor new_actor) {
+		for(int i=0;i<cellgrid.length;i++)for(int j=0;j<cellgrid.length;j++)
+			if(cellgrid[i][j].occupied==false)	
+				{
+					System.out.println(i+" "+j);
+					addPiece(new_actor,i,j);
+					i=j=cellgrid.length;
+				}
+	}
+	
+	
+	public void addPiece(Actor new_actor, int gridx,int gridy)
+	{
+		new_actor.setCell(cellgrid[gridx][gridy]);
+		new_actor.Active=true;
+		add(new_actor);
+		Actors.add(new_actor);
+	
+	}
+	
+	//if you want to add actor directly to the screen
+	public void addActor(Actor new_actor,int screenx,int screeny) {
+		add(new_actor);
+		Actors.add(new_actor);
+		new_actor.xoffset=screenx;
+		new_actor.yoffset=screeny;
+		//further improvement note: impliment this Actor class so you can use it frome actor class
+	}
 	
 
 /*-------------Rotation manipulation------------------*/
