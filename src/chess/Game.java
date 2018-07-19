@@ -66,7 +66,7 @@ class GridPanel extends JLayeredPane implements ActionListener
 	public static double gridratio=1; // not ready yet
 	private int cellsize = (int)(150*gridratio);	// cell size on screen
 	private int cellspace= 0;//15; // space between the cells
-	private double rad = 0; // current view angle
+	private double rad = 45; // current view angle
 	private double radd = 0.1; // change in view angle
 	private int gsize=8;//number of cells(this is then squared)
 
@@ -80,7 +80,6 @@ class GridPanel extends JLayeredPane implements ActionListener
 			//0 nothing should be selectable
 			//1 no item selected, only the pieces can be selected
 			//2 item selected, only tiles can be selected
-	
 	
 	private Node cellgrid[][];  //cell grid
 	private int dx = 0;		// reserved for player gridmovement
@@ -129,7 +128,7 @@ class GridPanel extends JLayeredPane implements ActionListener
 				    	if(tp[0]>=0&&tp[0]<gsize&&tp[1]>=0&&tp[1]<gsize)
 				    	{
 				    		cell=cellgrid[tp[0]][tp[1]];
-				    		cell.highlighted=true;
+				    		//cell.highlighted=true;
 				    		
 				    		if(selected_piece!=null)
 				    		{
@@ -166,7 +165,9 @@ class GridPanel extends JLayeredPane implements ActionListener
 		    				//otherwise do nothing
 		    			}
 			    	}
+			    	
 			    	inputenabled=true;
+			    	
 		    	}	
 		    }
 		    
@@ -187,8 +188,7 @@ class GridPanel extends JLayeredPane implements ActionListener
 	
 	public void movehighlight(Actor Piece,boolean highlighted)
 	{
-		
-		//TODO call the Actor Highlight function	
+		Piece.highlight(highlighted);
 	}
 	//selection functions
 	protected void unselectpiece() {
@@ -201,9 +201,11 @@ class GridPanel extends JLayeredPane implements ActionListener
 		if(selected_piece!=null)unselectpiece();
 		movehighlight(piece,true);
 		selected_piece=piece;
+		
 	}
 	protected void switchturns() {
 		//currentturn=(currentturn+1)%2;
+		selected_piece=null;
 	}
 
 
@@ -224,28 +226,27 @@ class GridPanel extends JLayeredPane implements ActionListener
 	   Graphics2D g2d = (Graphics2D)g;
 	    //x=y=getHeight()/2;
 	    dx=dy=0;
-	    	    
+	    
+	    //draw the grids
 	    //perform the transformation for the 3d effect
 	    g2d.translate(transx, transy);
 		g2d.scale(1, 0.3);		
 		g2d.rotate(Math.toRadians(rad),centerpoint[0],centerpoint[1]);
 		
-		
-		//draw the grids
+		//
 		if(Highlightvalue>=255||Highlightvalue<=0) dHighlightvalue*=-1;
-		Highlightvalue+=dHighlightvalue;
-			
+		Highlightvalue+=dHighlightvalue;	
 		for(int i=0;i<gsize;i++)for(int j =0;j<gsize;j++)	
 		{
 			//checkered
 			int RoB=(i+j)%2;
 			
-			if(cellgrid[i][j].highlighted==true) 
+			if(cellgrid[i][j].highlighted==true) //cell is highlighted
 			{
 				if(RoB==1)g2d.setColor(new Color(255,Highlightvalue%255,0));//highlighting
 				else g2d.setColor(new Color(Highlightvalue%255,Highlightvalue%255,0));
 			}
-			else 
+			else //cell is not highlighted
 			{
 				if(RoB==1)			g2d.setColor(Color.red);
 				else 				g2d.setColor(Color.black);	
@@ -271,7 +272,7 @@ class GridPanel extends JLayeredPane implements ActionListener
 		{
 			
 			ractor=Actors.get(i);
-			ractor.updatebycell();//snap the actor to the new coords
+			//ractor.updatebycell();//snap the actor to the new coords
 			setLayer(ractor, ractor.yoffset);
 			ractor.Drawframe(g2d);//draw the actor
 			
@@ -345,6 +346,8 @@ class GridPanel extends JLayeredPane implements ActionListener
 		
 		for(int i =0;i<8;i++) addPiece(new Pawn(0),i,1);//white pawns
 		for(int i =0;i<8;i++) addPiece(new Pawn(1),i,6);//black pawns
+		
+		//addPiece(new Rook(1),5,4);
 		
 		//add black pieces
 		addPiece(new Rook(1),0,7);//black rook1

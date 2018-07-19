@@ -20,15 +20,16 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-public class Actor extends JPanel implements ActionListener{//extend button
-
+	
+	
+	
+	
+public abstract class Actor extends JPanel implements ActionListener{//extend button
+	
 	public static int TotalImages;
 	public static String[] imagefilelist= {"chess_pieces.png","test_character.png"};
 	public static BufferedImage[] imageset;
 	public static boolean imageisset=false;
-	
-	
-	
 	int ID;
 	int factionID;//0: player 1, 1 player 2
 	Node currentcell;//keep this in mind when changing the Actors position.
@@ -100,15 +101,7 @@ public class Actor extends JPanel implements ActionListener{//extend button
 		//setatoffset(cell.Virtualoffsetx,cell.Virtualoffsety);
 		Active=true;
 	}
-	public void setup() {
-		
-		
-	}/*
-	public void addtogridpanel(GridPanel GP,int gx,int gy)
-	{
-		GP.cellgrid
-		
-	}*/
+	
 	
 	
 	public int GetY() {return yoffset;}
@@ -123,6 +116,7 @@ public class Actor extends JPanel implements ActionListener{//extend button
 	
 	public void updatebycell()
 	{
+		if(Active&&set_to_a_cell)
 		if (currentcell!=null);
 		{
 			int offx;
@@ -134,6 +128,7 @@ public class Actor extends JPanel implements ActionListener{//extend button
 	}
 	public void updatebycell(int moveoffsetx,int moveoffsety)//not setup yet, but it will updates by cell, with an offset
 	{
+		
 		int offx;
 		if(currentcell.cellsize>xsize) offx=currentcell.Virtualoffsetx+(currentcell.cellsize/2-(xsize/2));
 		else offx = currentcell.Virtualoffsetx-((xsize/2)-currentcell.cellsize/2);
@@ -164,6 +159,7 @@ public class Actor extends JPanel implements ActionListener{//extend button
 		*/
 		unsetCell();
 		Active=false;
+		set_to_a_cell=false;
 		
 	}
 	public void setoffset(int ox,int oy) {
@@ -184,7 +180,7 @@ public class Actor extends JPanel implements ActionListener{//extend button
 	public void moveTo(Node newcell) {
 		
 		//setRange(false);
-		//TODO: run function to dehighlight potential move here here.
+		highlight(false);
 		unsetCell();
 		if (newcell.actor!=null)newcell.actor.kill();
 		setCell(newcell);
@@ -219,12 +215,130 @@ public class Actor extends JPanel implements ActionListener{//extend button
 		}
 	}
 	
+	public abstract void highlight(boolean b);  //abstract method will be defined in subclasses
+	
+	//function highlights or unhighlights cells vertically/horizontally in all directions, starting from curCell
+    //and ending at end of board/other piece
+	protected void lineHighlighter(Node curCell, boolean b)
+	{ 
+		Node n = curCell; 
+		n.highlighted = b; 
+		while(n.adgNodes[0] != null)
+		{
+			n = n.adgNodes[0];
+			if(!n.occupied)
+			{
+				n.highlighted = b;
+				continue;
+			}
+			else if(n.actor.factionID != this.factionID)
+				n.highlighted = b;
+			break;
+		}
+		n = curCell; 
+		while(n.adgNodes[1] != null)
+		{
+			n = n.adgNodes[1];
+			if(!n.occupied)
+			{
+				n.highlighted = b;
+				continue;
+			}
+			else if(n.actor.factionID != this.factionID)
+				n.highlighted = b;
+			break;
+		}
+		n = curCell;
+		while(n.adgNodes[2] != null)
+		{
+			n = n.adgNodes[2];
+			if(!n.occupied)
+			{
+				n.highlighted = b;
+				continue;
+			}
+			else if(n.actor.factionID != this.factionID)
+				n.highlighted = b;
+			break;
+		}
+		n = curCell;
+		while(n.adgNodes[3] != null)
+		{
+			n = n.adgNodes[3];
+			if(!n.occupied)
+			{
+				n.highlighted = b;
+				continue;
+			}
+			else if(n.actor.factionID != this.factionID)
+				n.highlighted = b;
+			break;
+		}
+	}
+	
+	//function highlights or unhighlights cells diagonally in all directions, starting at curCell
+	//and ending at end of board/other piece
+	protected void diagonalHighlighter(Node curCell,boolean b) 
+	{
+		Node n = curCell; 
+		n.highlighted = b; 
+		while(n.adgNodes[1] != null && n.adgNodes[1].adgNodes[0] != null)
+		{
+			n = n.adgNodes[1].adgNodes[0];
+			if(!n.occupied)
+			{
+				n.highlighted = b;
+				continue;
+			}
+			else if(n.actor.factionID != this.factionID)
+				n.highlighted = b;
+			break;
+		}
+		n = currentcell; 
+		while(n.adgNodes[1] != null && n.adgNodes[1].adgNodes[2] != null)
+		{
+			n = n.adgNodes[1].adgNodes[2];
+			if(!n.occupied)
+			{
+				n.highlighted = b;
+				continue;
+			}
+			else if(n.actor.factionID != this.factionID)
+				n.highlighted = b;
+			break;
+		}	
+		n = currentcell; 
+		while(n.adgNodes[3] != null && n.adgNodes[3].adgNodes[0] != null)
+		{
+			n = n.adgNodes[3].adgNodes[0];
+			if(!n.occupied)
+			{
+				n.highlighted = b;
+				continue;
+			}
+			else if(n.actor.factionID != this.factionID)
+				n.highlighted = b;
+			break;	
+		}
+		n = currentcell; 
+		while(n.adgNodes[3] != null && n.adgNodes[3].adgNodes[2] != null)
+		{
+			n = n.adgNodes[3].adgNodes[2];
+			if(!n.occupied)
+			{
+				n.highlighted = b;
+				continue;
+			}
+			else if(n.actor.factionID != this.factionID)
+				n.highlighted = b;
+			break;
+		}	
+	}
 	
 	
-public void actionPerformed(ActionEvent e) {
-		
-		System.out.println("Actor at "+xoffset+" & "+yoffset+" clicked");
-		
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
 		
 	}
 	

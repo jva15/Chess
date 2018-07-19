@@ -18,6 +18,10 @@ public class Node {
 	public int visited;//
 	public boolean occupied,highlighted;
 	public int[] attackrisk;//counter for attackrisk
+	int pax[]=new int[4];
+	int pay[]=new int[4];
+	int paz[]=new int[4];//height offset
+	
 	
 	public Node() {
 		// TODO Auto-generated constructor stub
@@ -30,7 +34,7 @@ public class Node {
 		cellsize=10;
 		highlighted=false;
 		attackrisk=new int[2];
-		
+		for(int i =0;i<4;i++) paz[i]=0;
 		
 	}
 	
@@ -76,20 +80,37 @@ public class Node {
 		setpoly(x,y);
 	}
 	
+	
+	
+	/*		0_1
+	 * 		|_| for corners,
+	 * 	    3 2
+	 * */
+	public void setpointheight(int corner,int pheight){
+
+		//0=0&3
+		//1=1&0
+		//2=2&1
+		//3=3&2
+		
+		
+		
+		
+	}
+	
+	
 	public void setpoly(int x, int y)
 	{
 		
-		int pax[]=new int[4];
-		int pay[]=new int[4];
 		
 		pax[0]=x;
-		pay[0]=y;
+		pay[0]=y+paz[0];
 		pax[1]=x+cellsize;
-		pay[1]=y;
+		pay[1]=y+paz[1];
 		pax[2]=x+cellsize;
-		pay[2]=y+cellsize;
+		pay[2]=y+cellsize+paz[2];
 		pax[3]=x;
-		pay[3]=y+cellsize;
+		pay[3]=y+cellsize+paz[3];
 			
 		poly=new Polygon( pay , pax , 4);
 

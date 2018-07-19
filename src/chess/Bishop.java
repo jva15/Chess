@@ -23,11 +23,10 @@ public class Bishop extends Actor {
 		I_index_x=ID=3;
 		I_index_y=factionID;
 	}
-	public void actionPerformed(ActionEvent e) {
-		
-		
-		
-		
+
+	public void highlight(boolean b)
+	{
+		super.diagonalHighlighter(currentcell, b);
 	}
 
 }

@@ -25,11 +25,41 @@ public class King extends Actor {
 		I_index_y=factionID;
 		I_index_x=1;
 	}
-	public void actionPerformed(ActionEvent e) {
-		
-		
-		
-		
+	
+	
+	//needs to be aware that King cannot put itself in a capturable position -- this functionality not added yet
+	public void highlight(boolean b) {
+		Node n = currentcell; 
+		n.highlighted = true; 
+		if(n.adgNodes[1] != null)
+			if(!n.adgNodes[1].occupied || n.adgNodes[1].actor.factionID != this.factionID)
+				n.adgNodes[1].highlighted = b;
+		if(n.adgNodes[3] != null)
+			if(!n.adgNodes[3].occupied || n.adgNodes[1].actor.factionID != this.factionID)
+				n.adgNodes[3].highlighted = b;
+		if(n.adgNodes[0] != null)
+		{
+			n = n.adgNodes[0];
+			if(!n.occupied || n.actor.factionID != this.factionID)
+				n.highlighted = b; 
+			if(n.adgNodes[1] != null)
+				if(!n.adgNodes[1].occupied || n.adgNodes[1].actor.factionID != this.factionID)
+					n.adgNodes[1].highlighted = b; 
+			if(n.adgNodes[3] != null)
+				if(!n.adgNodes[3].occupied || n.adgNodes[3].actor.factionID != this.factionID)
+					n.adgNodes[3].highlighted = b;
+		}
+		if(n.adgNodes[2] != null)
+		{
+			n = n.adgNodes[2];
+			if(!n.occupied || n.actor.factionID != this.factionID)
+				n.highlighted = b; 
+			if(n.adgNodes[1] != null)
+				if(!n.adgNodes[1].occupied || n.adgNodes[1].actor.factionID != this.factionID)
+					n.adgNodes[1].highlighted = b; 
+			if(n.adgNodes[3] != null)
+				if(!n.adgNodes[3].occupied || n.adgNodes[3].actor.factionID != this.factionID)
+					n.adgNodes[3].highlighted = b;
+		}	
 	}
-
 }
