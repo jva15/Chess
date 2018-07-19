@@ -149,7 +149,7 @@ class GridPanel extends JLayeredPane implements ActionListener
 			    	{
 
 		    			Piece=(Actor)getComponentAt(mousepointer[0],(int)(mousepointer[1]));
-		    			Piece.currentcell.highlighted=true;
+		    			//Piece.currentcell.highlighted=true;
 		    			if(Piece.factionID==currentturn) select(Piece);
 				    	else if(Piece.currentcell.highlighted) //piece is not yours
 		    			{
