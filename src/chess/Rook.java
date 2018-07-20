@@ -25,9 +25,16 @@ public class Rook extends Actor {
 		
 	}
 
+	//highlights cells in horizontal/vertical line from Rook piece
 	public void highlight(boolean b) 
 	{
-		super.lineHighlighter(currentcell, b);	
+		lineHighlighter(b);	
+	}
+	
+	//sets attack risk in cells in horizontal/vertical lines from Rook piece
+	public void setRange(boolean b)
+	{
+		lineAttack(b);
 	}
 	
 }

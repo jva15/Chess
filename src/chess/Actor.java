@@ -188,19 +188,19 @@ public abstract class Actor extends JPanel implements ActionListener{//extend bu
 		
 	}
 	
-	public void setRange(boolean inrange)//uses the classmember factionId aswell
-	{
+	public abstract void setRange(boolean inrange); //uses the classmember factionId aswell
+
 		/*TODO: Impliment setRange for each of the subclasses of Actor
 		* similar to highlight but instead of highlighting
 		* it should call setAttackrisk(inrange,factionID) on the cell
 		* remember not to let the piece setRange on itself
 		* 
-		* this would be a good oportunity to practice with iterators to avoid repeating code for both 
+		* this would be a good opportunity to practice with iterators to avoid repeating code for both 
 		* highlight and setRange
 		*/
 		
 		
-	}
+
 	
 	public void paintComponent(Graphics g){
 		if(Active){
@@ -217,124 +217,197 @@ public abstract class Actor extends JPanel implements ActionListener{//extend bu
 	
 	public abstract void highlight(boolean b);  //abstract method will be defined in subclasses
 	
-	//function highlights or unhighlights cells vertically/horizontally in all directions, starting from curCell
+	//function highlights or unhighlights cells vertically/horizontally in all directions, starting from currentcell
     //and ending at end of board/other piece
-	protected void lineHighlighter(Node curCell, boolean b)
+	protected void lineHighlighter(boolean b)
 	{ 
-		Node n = curCell; 
+		Node n = currentcell; 
 		n.highlighted = b; 
 		while(n.adgNodes[0] != null)
 		{
 			n = n.adgNodes[0];
 			if(!n.occupied)
-			{
 				n.highlighted = b;
-				continue;
+			else 
+			{	
+				if(n.actor.factionID != this.factionID)	
+					n.highlighted = b;
+				break;
 			}
-			else if(n.actor.factionID != this.factionID)
-				n.highlighted = b;
-			break;
 		}
-		n = curCell; 
+		n = currentcell; 
 		while(n.adgNodes[1] != null)
 		{
 			n = n.adgNodes[1];
 			if(!n.occupied)
-			{
 				n.highlighted = b;
-				continue;
+			else 
+			{	
+				if(n.actor.factionID != this.factionID)	
+					n.highlighted = b;
+				break;
 			}
-			else if(n.actor.factionID != this.factionID)
-				n.highlighted = b;
-			break;
 		}
-		n = curCell;
+		n = currentcell;
 		while(n.adgNodes[2] != null)
 		{
 			n = n.adgNodes[2];
 			if(!n.occupied)
-			{
 				n.highlighted = b;
-				continue;
+			else 
+			{	
+				if(n.actor.factionID != this.factionID)	
+					n.highlighted = b;
+				break;
 			}
-			else if(n.actor.factionID != this.factionID)
-				n.highlighted = b;
-			break;
 		}
-		n = curCell;
+		n = currentcell;
 		while(n.adgNodes[3] != null)
 		{
 			n = n.adgNodes[3];
 			if(!n.occupied)
-			{
 				n.highlighted = b;
-				continue;
+			else 
+			{	
+				if(n.actor.factionID != this.factionID)	
+					n.highlighted = b;
+				break;
 			}
-			else if(n.actor.factionID != this.factionID)
-				n.highlighted = b;
-			break;
 		}
 	}
 	
-	//function highlights or unhighlights cells diagonally in all directions, starting at curCell
-	//and ending at end of board/other piece
-	protected void diagonalHighlighter(Node curCell,boolean b) 
+	//sets attack risk of cells in horizontal/vertical line of piece:
+	protected void lineAttack(boolean inrange)
 	{
-		Node n = curCell; 
+		Node n = currentcell; 
+		while(n.adgNodes[0] != null)
+		{
+			n = n.adgNodes[0];                     //advance to next cell
+			n.setAttackRisk(inrange, factionID);   //update attack risk of cell
+			if(n.occupied)                         //if node is occupied, break
+				break;
+		}
+		n = currentcell; 
+		while(n.adgNodes[1] != null)
+		{
+			n = n.adgNodes[1];                     //advance to next cell
+			n.setAttackRisk(inrange, factionID);   //update attack risk of cell
+			if(n.occupied)                         //if node is occupied, break
+				break;
+		}
+		n = currentcell;
+		while(n.adgNodes[2] != null)
+		{
+			n = n.adgNodes[2];                     //advance to next cell
+			n.setAttackRisk(inrange, factionID);   //update attack risk of cell
+			if(n.occupied)                         //if node is occupied, break
+				break;
+		}
+		n = currentcell;
+		while(n.adgNodes[3] != null)
+		{
+			n = n.adgNodes[3];                     //advance to next cell
+			n.setAttackRisk(inrange, factionID);   //update attack risk of cell
+			if(n.occupied)                         //if node is occupied, break
+				break;
+		}
+	}
+	
+	//function highlights or unhighlights cells diagonally in all directions, starting at currentcell
+	//and ending at end of board/other piece
+	protected void diagonalHighlighter(boolean b) 
+	{
+		Node n = currentcell; 
 		n.highlighted = b; 
 		while(n.adgNodes[1] != null && n.adgNodes[1].adgNodes[0] != null)
 		{
 			n = n.adgNodes[1].adgNodes[0];
 			if(!n.occupied)
+				n.highlighted = b;
+			else 
 			{
-				n.highlighted = b;
-				continue;
+				if(n.actor.factionID != this.factionID)
+					n.highlighted = b;
+				break;
 			}
-			else if(n.actor.factionID != this.factionID)
-				n.highlighted = b;
-			break;
 		}
 		n = currentcell; 
 		while(n.adgNodes[1] != null && n.adgNodes[1].adgNodes[2] != null)
 		{
 			n = n.adgNodes[1].adgNodes[2];
 			if(!n.occupied)
+				n.highlighted = b;
+			else 
 			{
-				n.highlighted = b;
-				continue;
+				if(n.actor.factionID != this.factionID)
+					n.highlighted = b;
+				break;
 			}
-			else if(n.actor.factionID != this.factionID)
-				n.highlighted = b;
-			break;
 		}	
 		n = currentcell; 
 		while(n.adgNodes[3] != null && n.adgNodes[3].adgNodes[0] != null)
 		{
 			n = n.adgNodes[3].adgNodes[0];
 			if(!n.occupied)
+				n.highlighted = b;
+			else 
 			{
-				n.highlighted = b;
-				continue;
-			}
-			else if(n.actor.factionID != this.factionID)
-				n.highlighted = b;
-			break;	
+				if(n.actor.factionID != this.factionID)
+					n.highlighted = b;
+				break;
+			}	
 		}
 		n = currentcell; 
 		while(n.adgNodes[3] != null && n.adgNodes[3].adgNodes[2] != null)
 		{
 			n = n.adgNodes[3].adgNodes[2];
 			if(!n.occupied)
+				n.highlighted = b;
+			else 
 			{
-				n.highlighted = b;
-				continue;
+				if(n.actor.factionID != this.factionID)
+					n.highlighted = b;
+				break;
 			}
-			else if(n.actor.factionID != this.factionID)
-				n.highlighted = b;
-			break;
 		}	
 	}
 	
+	//sets attack risk for cells in diagonal range from piece:
+	protected void diagAttack(boolean inrange)
+	{
+		Node n = currentcell; 
+		while(n.adgNodes[1] != null && n.adgNodes[1].adgNodes[0] != null)
+		{
+			n = n.adgNodes[1].adgNodes[0];
+			n.setAttackRisk(inrange, factionID);
+			if(n.occupied)
+				break;
+		}
+		n = currentcell; 
+		while(n.adgNodes[1] != null && n.adgNodes[1].adgNodes[2] != null)
+		{
+			n = n.adgNodes[1].adgNodes[2];
+			n.setAttackRisk(inrange, factionID);
+			if(n.occupied)
+				break;
+		}	
+		n = currentcell; 
+		while(n.adgNodes[3] != null && n.adgNodes[3].adgNodes[0] != null)
+		{
+			n = n.adgNodes[3].adgNodes[0];
+			n.setAttackRisk(inrange, factionID);
+			if(n.occupied)
+				break;
+		}
+		n = currentcell; 
+		while(n.adgNodes[3] != null && n.adgNodes[3].adgNodes[2] != null)
+		{
+			n = n.adgNodes[3].adgNodes[2];
+			n.setAttackRisk(inrange, factionID);
+			if(n.occupied)
+				break;
+		}
+	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {

@@ -40,11 +40,10 @@ public class Node {
 	
 	public void setAttackRisk(boolean inrange,int facID)
 	{
-		/*TODO: use inrange to determine whether to increment or decriment attackrisk[facID]
-		 * forexample:
-		 * if attackrisk[0]=2; that means player 1 has 2 pieces that can hit that spot
-		 * 
-		 * */
+		if(inrange)
+			attackrisk[facID]++;
+		else
+			attackrisk[facID]--;
 	}
 	
 	public Node(int x,int y)

@@ -26,7 +26,12 @@ public class Bishop extends Actor {
 
 	public void highlight(boolean b)
 	{
-		super.diagonalHighlighter(currentcell, b);
+		super.diagonalHighlighter(b);
+	}
+	
+	public void setRange(boolean inrange)
+	{
+		diagAttack(inrange);
 	}
 
 }

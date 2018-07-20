@@ -20,8 +20,15 @@ public class Pawn extends Actor {
 		//I_index_y=(faction%2);
 		setupID();
 	}
+	
 	public void setupID(){
 		ID=0;
+		
+		if(factionID == 0)
+			direction = 1;
+		else
+			direction = 3;
+		
 		I_index_x=0;
 		I_index_y=factionID;
 		
@@ -44,9 +51,18 @@ public class Pawn extends Actor {
 				if(n.adgNodes[2].occupied && n.adgNodes[2].actor.factionID != this.factionID)
 					n.adgNodes[2].highlighted = b;
 			if(firstMove)
-				if(!n.adgNodes[direction].occupied)
+				if(!n.occupied && !n.adgNodes[direction].occupied)
 					n.adgNodes[direction].highlighted = b;
 		}	
 	}
 	
+	public void setRange(boolean inrange)
+	{
+		Node n = currentcell; 
+		n = n.adgNodes[direction];
+		if(n.adgNodes[0] != null)
+			n.adgNodes[0].setAttackRisk(inrange, factionID);
+		if(n.adgNodes[2] != null)
+			n.adgNodes[2].setAttackRisk(inrange, factionID);
+	}	
 }

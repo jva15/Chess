@@ -26,7 +26,13 @@ public class Queen extends Actor {
 	
 	public void highlight(boolean b) 
 	{
-		super.lineHighlighter(currentcell, b);
-		super.diagonalHighlighter(currentcell, b);
+		lineHighlighter(b);
+		diagonalHighlighter(b);
+	}
+	
+	public void setRange(boolean inrange)
+	{
+		lineAttack(inrange);
+		diagAttack(inrange);
 	}
 }

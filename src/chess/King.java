@@ -11,7 +11,6 @@ public class King extends Actor {
 
 	public King(int f) {
 		super(f);
-	
 		setupID();
 	}
 	
@@ -35,7 +34,7 @@ public class King extends Actor {
 			if(!n.adgNodes[1].occupied || n.adgNodes[1].actor.factionID != this.factionID)
 				n.adgNodes[1].highlighted = b;
 		if(n.adgNodes[3] != null)
-			if(!n.adgNodes[3].occupied || n.adgNodes[1].actor.factionID != this.factionID)
+			if(!n.adgNodes[3].occupied || n.adgNodes[3].actor.factionID != this.factionID)
 				n.adgNodes[3].highlighted = b;
 		if(n.adgNodes[0] != null)
 		{
@@ -62,4 +61,32 @@ public class King extends Actor {
 					n.adgNodes[3].highlighted = b;
 		}	
 	}
+
+	public void setRange(boolean inrange)
+	{
+		Node n = currentcell; 
+		if(n.adgNodes[1] != null)
+			n.adgNodes[1].setAttackRisk(inrange, factionID);
+		if(n.adgNodes[3] != null)
+			n.adgNodes[3].setAttackRisk(inrange, factionID);
+		if(n.adgNodes[0] != null)
+		{
+			n = n.adgNodes[0];
+			n.setAttackRisk(inrange, factionID);
+			if(n.adgNodes[1] != null)
+				n.adgNodes[1].setAttackRisk(inrange, factionID); 
+			if(n.adgNodes[3] != null)
+				n.adgNodes[3].setAttackRisk(inrange, factionID);
+		}
+		if(n.adgNodes[2] != null)
+		{
+			n = n.adgNodes[2];
+			n.setAttackRisk(inrange, factionID);
+			if(n.adgNodes[1] != null)
+				n.adgNodes[1].setAttackRisk(inrange, factionID); 
+			if(n.adgNodes[3] != null)
+				n.adgNodes[3].setAttackRisk(inrange, factionID);
+		}
+	}
 }
+
