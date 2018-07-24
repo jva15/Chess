@@ -46,6 +46,11 @@ public class Node {
 			attackrisk[facID]--;
 	}
 	
+	public int getAttackRisk(int facID)
+	{
+		return attackrisk[facID];
+	}
+	
 	public Node(int x,int y)
 	{
 		this();
