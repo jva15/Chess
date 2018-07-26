@@ -69,7 +69,7 @@ public class Node {
 	
 	public int getAttackRisk(int facID)
 	{
-		return attackrisk[facID];
+		return attackrisk[facID^1];
 	}
 	
 	public Node(int x,int y)

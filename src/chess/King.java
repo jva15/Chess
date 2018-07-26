@@ -32,11 +32,11 @@ public class King extends Actor {
 		n.highlighted = true; 
 		if(n.adgNodes[1] != null)
 			if(!n.adgNodes[1].occupied || n.adgNodes[1].actor.factionID != this.factionID)
-				if(n.adgNodes[1].getAttackRisk(factionID ^ 1) == 0)
+				if(n.adgNodes[1].getAttackRisk(factionID) == 0)
 					n.adgNodes[1].highlighted = b;
 		if(n.adgNodes[3] != null)
 			if(!n.adgNodes[3].occupied || n.adgNodes[3].actor.factionID != this.factionID)
-				if(n.adgNodes[3].getAttackRisk(factionID ^ 1) == 0)
+				if(n.adgNodes[3].getAttackRisk(factionID) == 0)
 					n.adgNodes[3].highlighted = b;
 		if(n.adgNodes[0] != null)
 		{
@@ -46,26 +46,26 @@ public class King extends Actor {
 					n.highlighted = b; 
 			if(n.adgNodes[1] != null)
 				if(!n.adgNodes[1].occupied || n.adgNodes[1].actor.factionID != this.factionID)
-					if(n.adgNodes[1].getAttackRisk(factionID ^ 1) == 0)
+					if(n.adgNodes[1].getAttackRisk(factionID) == 0)
 						n.adgNodes[1].highlighted = b; 
 			if(n.adgNodes[3] != null)
 				if(!n.adgNodes[3].occupied || n.adgNodes[3].actor.factionID != this.factionID)
-					if(n.adgNodes[3].getAttackRisk(factionID ^ 1) == 0)
+					if(n.adgNodes[3].getAttackRisk(factionID) == 0)
 						n.adgNodes[3].highlighted = b;
 		}
 		if(n.adgNodes[2] != null)
 		{
 			n = n.adgNodes[2];
 			if(!n.occupied || n.actor.factionID != this.factionID)
-				if(n.getAttackRisk(factionID ^ 1) == 0)
+				if(n.getAttackRisk(factionID) == 0)
 					n.highlighted = b; 
 			if(n.adgNodes[1] != null)
 				if(!n.adgNodes[1].occupied || n.adgNodes[1].actor.factionID != this.factionID)
-					if(n.adgNodes[1].getAttackRisk(factionID ^ 1) == 0)
+					if(n.adgNodes[1].getAttackRisk(factionID) == 0)
 						n.adgNodes[1].highlighted = b; 
 			if(n.adgNodes[3] != null)
 				if(!n.adgNodes[3].occupied || n.adgNodes[3].actor.factionID != this.factionID)
-					if(n.adgNodes[3].getAttackRisk(factionID ^ 1) == 0)
+					if(n.adgNodes[3].getAttackRisk(factionID) == 0)
 						n.adgNodes[3].highlighted = b;
 		}	
 	}

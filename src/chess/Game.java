@@ -45,10 +45,22 @@ class GameFrame extends JFrame
 	JPanel Startscreen;
 	JPanel Mainmenu;
 	int initialxclick;
+	
+	//plarestuff
+	boolean kingsintrouble[] = new boolean[2];
+	boolean thekingisdead[]=new boolean[2];
+	King kings[]=new King[2];
+	
+	
 	GameFrame()
 	{
 		super("Chess");
 		super.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		for(int i=0;i<2;i++)
+		{
+			kingsintrouble[i]=thekingisdead[i]=false;	
+		}
+		
 		LoadGrid();
 		setSize(300*6,300*6);
 		setVisible(true);
@@ -136,13 +148,15 @@ class GameFrame extends JFrame
 			timer.setCoalesce(true);
 			timer.start();		// start the timer
 			Actors=new LinkedList<Actor>();
-			Populate_board();	  
+			Populate_board();	 
+			update();
 		}
 		
 		
 		
 		public GridPanel() 
 		{
+			
 			centerpoint[0]=x+((cellsize+cellspace)*gsize)/2-cellspace;//
 			centerpoint[1]=y+((cellsize+cellspace)*gsize)/2-cellspace;//
 			focalpointx=x+(int)(((centerpoint[0]-x)*2-(cellsize))/2);//used to store the center point of actors to be rotated
@@ -244,7 +258,7 @@ class GameFrame extends JFrame
 						    			
 						    			
 						    			
-						    			switchturns();
+						    			endturn();
 						    			checkforcheck();
 						    		
 						    		}
@@ -273,8 +287,7 @@ class GameFrame extends JFrame
 			    					movehighlight(selected_piece, false);
 			    					selected_piece.moveTo(Piece.currentcell);
 			    					selected_piece=null;
-			    					update();
-			    					switchturns();
+			    					endturn();
 			    					checkforcheck();
 			    				}
 			    				//otherwise do nothing
@@ -313,7 +326,20 @@ class GameFrame extends JFrame
 			selected_piece=piece;
 			
 		}
-		protected void switchturns() {
+		protected void endturn() {
+			update();
+			if(kings[currentturn^1]!=null&&kings[currentturn^1].currentcell!=null) {
+				
+				if(kings[currentturn^1].currentcell.getAttackRisk(currentturn^1)>0)
+					kingsintrouble[currentturn^1]=true;
+				
+				
+			}
+			else {
+				
+	
+			}	
+			
 			currentturn=(currentturn+1)%2;
 			selected_piece=null;
 		}
@@ -326,7 +352,10 @@ class GameFrame extends JFrame
 			//update the ranges
 			for(Actor A: Actors)
 			{
+				//System.out.println(A.ID);
+				
 				A.setRange(true);
+			
 			}
 		}
 		protected void checkforcheck() {
@@ -389,7 +418,7 @@ class GameFrame extends JFrame
 			int rdx=1,rdy=1;
 			int rstx=0,rsty=0;
 			boolean ended=true;
-			
+	//TODO: FIX HERE
 			if (rad<90)					{rsty=gsize-1;rstx=gsize-1;
 				if(rad<=45) 					{rdx=1;rdy=-1;}else{rdx=-1;rdy=1;}}
 			else if (rad>=90&&rad<180)	{rsty=gsize-1;rstx=0;
@@ -422,9 +451,8 @@ class GameFrame extends JFrame
 					j=sty;
 					}
 					else {
-						
 						overload=true;
-						
+
 					}
 				}else if(!(j<gsize&&j>=0)) {
 					if((nextry<gsize&&nextry>=0)) 
@@ -474,7 +502,12 @@ class GameFrame extends JFrame
 				 /*{rdx==-1&&rdy=1;}else{rdx==1;rdy==-1;}}
 				{rdx==-1&&rdy==-1;}else{rdx==1;rdy==1;}}
 			*/
-				 
+				int tempcolor;
+				 if(cellgrid[i][j].getAttackRisk(currentturn)>0) {
+					 tempcolor=225;
+					 
+				 }
+				 else tempcolor=0;
 				
 				//System.out.println(i+" "+j);
 				
@@ -488,8 +521,11 @@ class GameFrame extends JFrame
 				}
 				else //cell is not highlighted
 				{
-					if(RoB==1)			g2d.setColor(new Color(255,0,0));
-					else 				g2d.setColor(new Color(0,0,0));	
+					if(RoB==1)			g2d.setColor(new Color(255,0,tempcolor));
+					else 				g2d.setColor(new Color(0,0,tempcolor));	
+					
+					
+					
 				}
 				
 				Polygon poly= cellgrid[i][j].getPoly(transx,transy,centerpoint, Math.toRadians(rad), 0.3);
@@ -583,29 +619,34 @@ class GameFrame extends JFrame
 			//add white pieces
 			//new Rook(cellgrid[0][0])
 			//addActor(Rook())
-			addPiece(new Rook(0),0,0);
-			addPiece(new Rook(0),7,0);
-			addPiece(new Knight(1),1,0);//white Knight1
-			addPiece(new Knight(0),6,0);//white Knight2
-			addPiece(new Bishop(0),2,0);//white Bishop1
-			addPiece(new Bishop(0),5,0);//white Bishop2
-			addPiece(new King(0),3,0);//white King
-			addPiece(new Queen(0),4,0);//white Queen
 			
 			for(int i =0;i<8;i++) addPiece(new Pawn(0),i,1);//white pawns
 			for(int i =0;i<8;i++) addPiece(new Pawn(1),i,6);//black pawns
 			
+			kings[0]=new King(0);
+			kings[1]=new King(1);
+			addPiece(new Rook(0),0,0);
+			addPiece(new Rook(0),7,0);
+			addPiece(new Knight(0),1,0);//white Knight1
+			addPiece(new Knight(0),6,0);//white Knight2
+			addPiece(new Bishop(0),2,0);//white Bishop1
+			addPiece(new Bishop(0),5,0);//white Bishop2
+			addPiece(kings[0],3,0);//white King
+			addPiece(new Queen(0),4,0);//white Queen
+			
+			
 			//addPiece(new Rook(1),5,4);
 			
 			//add black pieces
-			addPiece(new Pawn(1),4,2);
+			//addPiece(new Pawn(1),4,2);
 			addPiece(new Rook(1),0,7);//black rook1
 			addPiece(new Rook(1),7,7);//black rook2
 			addPiece(new Knight(1),1,7);;//black Knight1
 			addPiece(new Knight(1),6,7);;//black Knight2
 			addPiece(new Bishop(1),2,7);//black Bishop1
 			addPiece(new Bishop(1),5,7);//black Bishop2
-			addPiece(new King(1),4,7);//black King
+			addPiece(kings[1],4,7);//black King
+			addPiece(new Queen(1),3,7);
 			//addPiece(new Queen(1),3,7);//black Queen
 			//addPiece(new Pawn(cellgrid[3][7],0));//black Queen
 			//Chara chara=new Chara(cellgrid[5][5],1);
@@ -623,7 +664,7 @@ class GameFrame extends JFrame
 					{
 						System.out.println(i+" "+j);
 						addPiece(new_actor,i,j);
-						i=j=cellgrid.length;
+						//i=j=cellgrid.length;
 					}
 		}
 		
