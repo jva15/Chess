@@ -34,7 +34,7 @@ public abstract class Actor extends JPanel implements ActionListener{//extend bu
 	int factionID;//0: player 1, 1 player 2
 	Node currentcell;//keep this in mind when changing the Actors position.
 	boolean Active;//
-	
+
 	
 	//image access info  
 	int pixellength=27;//
@@ -53,6 +53,9 @@ public abstract class Actor extends JPanel implements ActionListener{//extend bu
 	boolean highlighted;
 	Rectangle Boundingbox;//cause setBounds took too much processing 
 	boolean set_to_a_cell=false;
+	
+
+	
 	
 	
 	Actor(){

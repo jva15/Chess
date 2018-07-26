@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 
 public class Pawn extends Actor {
 	
-	private boolean firstMove = true;   //true if pawn has not moved yet, false otherwise
+	public boolean firstMove = true;   //true if pawn has not moved yet, false otherwise
 	private int direction;              //pawns cannot move backward
 	
 	public Pawn() {
@@ -25,9 +25,9 @@ public class Pawn extends Actor {
 		ID=0;
 		
 		if(factionID == 0)
-			direction = 2;
-		else
 			direction = 0;
+		else
+			direction = 2;
 		
 		I_index_x=0;
 		I_index_y=factionID;

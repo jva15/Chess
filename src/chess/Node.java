@@ -21,6 +21,7 @@ public class Node {
 	public int visited;//
 	public boolean occupied,highlighted;
 	public int[] attackrisk;//counter for attackrisk
+	public int[] gaurdchan;
 	public Color color;
 	//int pax[]=new int[4];
 	//int pay[]=new int[4];

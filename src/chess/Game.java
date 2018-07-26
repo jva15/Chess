@@ -50,7 +50,7 @@ class GameFrame extends JFrame
 	boolean kingsintrouble[] = new boolean[2];
 	boolean thekingisdead[]=new boolean[2];
 	King kings[]=new King[2];
-	
+	static int gaurdchannels=0;
 	
 	GameFrame()
 	{
@@ -281,15 +281,15 @@ class GameFrame extends JFrame
 			    			else if(Piece.currentcell.highlighted) //piece is not yours
 			    			{
 					    		
-			    				if(selected_piece!=null)
-			    				{
+			    				//if(selected_piece!=null)
+			    				//{
 			    					//can't unselect before a move otherwise, selected piece can't call moveTo()
 			    					movehighlight(selected_piece, false);
 			    					selected_piece.moveTo(Piece.currentcell);
 			    					selected_piece=null;
 			    					endturn();
-			    					checkforcheck();
-			    				}
+			    					//checkforcheck();
+			    				//}
 			    				//otherwise do nothing
 			    			}
 			    			
@@ -358,6 +358,22 @@ class GameFrame extends JFrame
 			
 			}
 		}
+		protected void falseupdate(Actor actortomove)
+		{
+			//clear the grid
+			for(int i=0;i<cellgrid.length;i++)for(int j=0;j<cellgrid.length;j++)
+			{cellgrid[i][j].attackrisk[0]=cellgrid[i][j].attackrisk[1]=0; }
+			//update the ranges
+			for(Actor A: Actors)
+			{
+				//System.out.println(A.ID);
+				A.setRange(true);
+			
+			}
+		}
+		
+		
+		
 		protected void checkforcheck() {
 			for(Actor A: Actors)
 			{
