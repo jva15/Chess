@@ -253,11 +253,6 @@ class GameFrame extends JFrame
 						    			
 						    			
 						    			
-						    			
-						    			
-						    			
-						    			
-						    			
 						    			endturn();
 						    			checkforcheck();
 						    		
@@ -624,7 +619,7 @@ class GameFrame extends JFrame
 				if(j!=nodeArr.length-1) nodeArr[i][j].adgNodes[0]=nodeArr[i][j+1];
 				else nodeArr[i][j].adgNodes[0]=null;
 			}
-			nodeArr[4][4].setpointheight(1, 10);
+			//nodeArr[4][4].setpointheight(1, 10);
 			return nodeArr;
 			
 		}

@@ -110,44 +110,48 @@ public class Node {
 	
 	
 	
-	/*		0_1
-	 * 		|_| for corners,
-	 * 	    3 2
+	/*	
+	 * 
+	 * 	0_3	0_3
+	 * 	|_|	|_| for corners,
+	 * 	1 2 1 2					  3
+	 * 	0_3	0_3					2   0
+	 * 	|_|	|_| for corners,	  1	
+	 * 	1 2 1 2
 	 * */
 	public void setpointheight(int corner,int pheight){
-
-		height[corner]=pheight;
+		corner=3;
+		height[corner]=-pheight;
 		if(corner==0)
 		{
-			if(adgNodes[0]!=null)adgNodes[0].height[1]=pheight;
-			{
-				if(adgNodes[0].adgNodes[1]!=null)adgNodes[0].adgNodes[1].height[2]=pheight;
-			}
-			if(adgNodes[1]!=null)adgNodes[1].height[3]=pheight;
+			if(adgNodes[2]!=null) {adgNodes[2].height[3]=-pheight;
+			if(adgNodes[2].adgNodes[3]!=null)adgNodes[2].adgNodes[3].height[2]=-pheight;}
+			if(adgNodes[3]!=null)adgNodes[3].height[1]=-pheight;
 		}
 		else if(corner==1)
 		{
-			if(adgNodes[1]!=null) adgNodes[1].height[2]=pheight;
 			
-			if(adgNodes[1].adgNodes[2]!=null)adgNodes[1].adgNodes[2].height[3]=pheight;
+			if(adgNodes[1]!=null) { adgNodes[1].height[0]=-pheight;
 			
-			if(adgNodes[2]!=null)adgNodes[2].height[0]=pheight;
+			if(adgNodes[1].adgNodes[2]!=null)adgNodes[1].adgNodes[2].height[3]=-pheight;
+		}
+			if(adgNodes[2]!=null)adgNodes[2].height[2]=-pheight;
 		}
 		else if(corner==2)
 		{
-			if(adgNodes[2]!=null) adgNodes[2].height[3]=pheight;
-			{
-				if(adgNodes[2].adgNodes[3]!=null)adgNodes[2].adgNodes[3].height[0]=pheight;
+			if(adgNodes[0]!=null) { adgNodes[0].height[1]=-pheight;
+			
+				if(adgNodes[0].adgNodes[1]!=null)adgNodes[0].adgNodes[1].height[0]=-pheight;
 			}
-			if(adgNodes[3]!=null)adgNodes[3].height[1]=pheight;
+			if(adgNodes[1]!=null)adgNodes[1].height[3]=-pheight;
 		}
 		else if(corner==3)
 		{
-			if(adgNodes[3]!=null) adgNodes[3].height[0]=pheight;
-			{
-				if(adgNodes[3].adgNodes[0]!=null)adgNodes[3].adgNodes[0].height[1]=pheight;
+			if(adgNodes[3]!=null) { adgNodes[3].height[2]=-pheight;
+			
+				if(adgNodes[3].adgNodes[0]!=null)adgNodes[3].adgNodes[0].height[1]=-pheight;
 			}
-			if(adgNodes[0]!=null)adgNodes[0].height[2]=pheight;
+			if(adgNodes[0]!=null)adgNodes[0].height[0]=-pheight;
 		}
 		
 		
