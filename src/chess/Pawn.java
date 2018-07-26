@@ -25,9 +25,9 @@ public class Pawn extends Actor {
 		ID=0;
 		
 		if(factionID == 0)
-			direction = 1;
+			direction = 2;
 		else
-			direction = 3;
+			direction = 0;
 		
 		I_index_x=0;
 		I_index_y=factionID;
@@ -44,12 +44,12 @@ public class Pawn extends Actor {
 			n = n.adgNodes[direction];
 			if(!n.occupied)
 				n.highlighted = b;
-			if(n.adgNodes[0] != null)
-				if(n.adgNodes[0].occupied && n.adgNodes[0].actor.factionID != this.factionID)
-					n.adgNodes[0].highlighted = b;
-			if(n.adgNodes[2] != null)
-				if(n.adgNodes[2].occupied && n.adgNodes[2].actor.factionID != this.factionID)
-					n.adgNodes[2].highlighted = b;
+			if(n.adgNodes[1] != null)
+				if(n.adgNodes[1].occupied && n.adgNodes[1].actor.factionID != this.factionID)
+					n.adgNodes[1].highlighted = b;
+			if(n.adgNodes[3] != null)
+				if(n.adgNodes[3].occupied && n.adgNodes[2].actor.factionID != this.factionID)
+					n.adgNodes[3].highlighted = b;
 			if(firstMove)
 				if(!n.occupied && !n.adgNodes[direction].occupied)
 					n.adgNodes[direction].highlighted = b;
@@ -60,9 +60,9 @@ public class Pawn extends Actor {
 	{
 		Node n = currentcell; 
 		n = n.adgNodes[direction];
-		if(n.adgNodes[0] != null)
-			n.adgNodes[0].setAttackRisk(inrange, factionID);
-		if(n.adgNodes[2] != null)
-			n.adgNodes[2].setAttackRisk(inrange, factionID);
+		if(n.adgNodes[1] != null)
+			n.adgNodes[1].setAttackRisk(inrange, factionID);
+		if(n.adgNodes[3] != null)
+			n.adgNodes[3].setAttackRisk(inrange, factionID);
 	}	
 }
