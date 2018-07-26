@@ -88,5 +88,61 @@ public class Knight extends Actor {
 			}
 		}
 	}//end of highlight method for Knight actor class
+	
+	public void setRange(boolean inrange)
+	{
+		Node n = currentcell; 
+		if(n.adgNodes[0] != null)
+		{
+			 n = n.adgNodes[0];
+			 if(n.adgNodes[0] != null)
+			 {
+				 n = n.adgNodes[0];
+				 if(n.adgNodes[3] != null)
+					 n.adgNodes[3].setAttackRisk(inrange,factionID);
+				 if(n.adgNodes[1] != null)
+					 n.adgNodes[1].setAttackRisk(inrange, factionID);
+			 }
+		}
+		n = currentcell; 
+		if(n.adgNodes[1] != null)
+		{
+			 n = n.adgNodes[1];
+			 if(n.adgNodes[1] != null)
+			 {
+				 n = n.adgNodes[1];
+				 if(n.adgNodes[0] != null)
+					 n.adgNodes[0].setAttackRisk(inrange, factionID);
+				 if(n.adgNodes[2] != null)
+					 n.adgNodes[2].setAttackRisk(inrange, factionID);
+			 }
+		}
+		n = currentcell;
+		if(n.adgNodes[2] != null)
+		{
+			n = n.adgNodes[2];
+			if(n.adgNodes[2] != null)
+			{
+				n = n.adgNodes[2];
+				if(n.adgNodes[1] != null)
+					n.adgNodes[1].setAttackRisk(inrange, factionID);
+				if(n.adgNodes[3] != null)
+					n.adgNodes[3].setAttackRisk(inrange, factionID);
+			}
+		}
+		n = currentcell; 
+		if(n.adgNodes[3] != null)
+		{
+			n = n.adgNodes[3];
+			if(n.adgNodes[3] != null)
+			{
+				n = n.adgNodes[3];
+				if(n.adgNodes[0] != null)
+					n.adgNodes[0].setAttackRisk(inrange, factionID);
+				if(n.adgNodes[2] != null)
+					n.adgNodes[2].setAttackRisk(inrange, factionID);
+			}
+		}
+	}//end of setRange method for Knight actor class
 }
 
