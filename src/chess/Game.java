@@ -39,6 +39,7 @@ public class Game
 	
 	
 }
+
 class GameFrame extends JFrame
 {
 	GridPanel GP;
@@ -84,6 +85,16 @@ class GameFrame extends JFrame
 		
 	}
 
+	//displays dialog for pawn promotion
+	public void pawnPromotion(Actor propawn)
+	{
+		PawnProDialog ppd = new PawnProDialog(this, propawn);
+	}
+	
+	public void displayMoveError()
+	{
+		JOptionPane.showMessageDialog(this, "Move is not valid: King is put in check");
+	}
 
 	class GridPanel extends JLayeredPane implements ActionListener
 	{
@@ -110,8 +121,14 @@ class GameFrame extends JFrame
 		int focalpointx;//used to store the center point of actors to be rotated
 		int focalpointy;
 	
+		//Movement variables
+		Node[] kingPos = new Node[2];   //keeps track of current king position at every time 
+		Actor selected_piece = null;    
+		Node selected_cell = null; 
+		Node enPassantCell = null;      //stores location of cell where a potential en passant can occur
+		int kingAtkRisk;                //stores the current attack risk of the king's cell
+		boolean kingIsInCheck = false;
 		
-		Actor selected_piece = null;
 		int state;//not yet implimented
 				//0 nothing should be selectable
 				//1 no item selected, only the pieces can be selected
@@ -166,13 +183,11 @@ class GameFrame extends JFrame
 				
 				@Override
 				public void mouseMoved(MouseEvent e) {
-					// TODO Auto-generated method stub
 					
 				}
 				
 				@Override
 				public void mouseDragged(MouseEvent e) {
-					// TODO Auto-generated method stub
 					
 					if((e.getModifiers()&InputEvent.BUTTON3_MASK)==InputEvent.BUTTON3_MASK)
 					{
@@ -180,26 +195,21 @@ class GameFrame extends JFrame
 						System.out.println(e.getXOnScreen());
 						System.out.println(initialxclick);
 						radd=rd;
-								//Math.abs(rd) < 1 ? rd : (rd/Math.abs(rd))*1;
-						
-						
-						
+								//Math.abs(rd) < 1 ? rd : (rd/Math.abs(rd))*1;	
 					}
 				}
 			});
 			
-			//this is where selection of items occures
+			//this is where selection of items occurs
 			addMouseListener(new MouseAdapter() {
 			    @Override
 			    public void mouseReleased(MouseEvent e) {
-			    	// TODO Auto-generated method stub
 			    	super.mouseReleased(e);
 			    	radd=0;
 			    }
 				
 			    @Override
 			    public void mousePressed(MouseEvent e) {
-			    	// TODO Auto-generated method stub
 			    	super.mousePressed(e);
 			    	initialxclick=e.getXOnScreen();
 			    }
@@ -215,7 +225,7 @@ class GameFrame extends JFrame
 			    	}else
 			    	{
 			    	Actor Piece;
-			    	Node cell;
+			    	Node cell = null;
 			    	int[] mousepointer=new int[2];
 			    	
 			    	if(inputenabled)
@@ -234,62 +244,46 @@ class GameFrame extends JFrame
 					    	tp[0]=(int)((tp[0])/cellsize);//
 					    	tp[1]=(int)((tp[1])/cellsize);//
 					    	if(tp[0]>=0&&tp[0]<gsize&&tp[1]>=0&&tp[1]<gsize)
-					    	{
 					    		cell=cellgrid[tp[0]][tp[1]];
-					    		//cell.highlighted=true;
-					    		
-					    		if(selected_piece!=null)
-					    		{
-						    		
-						    		int factID=selected_piece.factionID;
-						    		if(factID==currentturn&&//if your previouspiece is selected
-						    		   cell.highlighted==true)//highlighted
-						    		{
-						    			
-						    			selected_piece.moveTo(cell);
-						    			
-						    			//0,1,2,3
-						    			
-						    			
-						    			
-						    			
-						    			endturn();
-						    			checkforcheck();
-						    		
-						    		}
-						    		
-					    		}
-					    	}
-					    	
 				    	}
 				    	else //actor selected
 				    	{
-	
 			    			Piece=(Actor)getComponentAt(mousepointer[0],(int)(mousepointer[1]));
-			    			//Piece.currentcell.highlighted=true;
-			    			if(Piece.factionID==currentturn)  
-			    				{
-			    					select(Piece);
-			    					
-			    				}
-			    			
-			    			else if(Piece.currentcell.highlighted) //piece is not yours
-			    			{
-					    		
-			    				//if(selected_piece!=null)
-			    				//{
-			    					//can't unselect before a move otherwise, selected piece can't call moveTo()
-			    					movehighlight(selected_piece, false);
-			    					selected_piece.moveTo(Piece.currentcell);
-			    					selected_piece=null;
-			    					endturn();
-			    					//checkforcheck();
-			    				//}
-			    				//otherwise do nothing
-			    			}
-			    			
+			    			cell = Piece.currentcell;	
 				    	}
 				    	
+				    	if(cell != null)  //if a cell/actor was clicked
+				    	{
+				    		if(cell.occupied && cell.actor.factionID == currentturn)  //if player selected their own piece
+				    			select(cell);                                         //will run highlight function for actor on cell
+				    		else if(cell.highlighted)                                 //else if player chose cell to move to 
+				    		{	
+				    			selected_piece = selected_cell.actor; 
+				    			if(cell.occupied && cell.actor.ID == 4 && selected_piece.ID == 1 && selected_piece.factionID == cell.actor.factionID)
+				    				castling(cell);
+				    			else
+				    			{
+				    				if(testMove(selected_piece, cell))
+				    				{
+				    					displayMoveError();
+				    					return;
+				    				}
+				    				selected_piece.moveTo(cell);           //move piece to cell
+				    				//if(piece is king or rook, we need to keep track of whether it is first move or not)
+				    				//for castling purposes
+				    				if(selected_piece.ID == 4)
+				    					selected_piece.firstMove = false;
+				    				else if(selected_piece.ID== 1)
+				    				{
+				    					selected_piece.firstMove = false;
+				    					kingPos[currentturn] = selected_piece.currentcell;
+				    				}
+				    			}
+				    			pawnCheck();                               //performs functions related only to the pawn
+				    			
+				    			endturn();
+				    		}
+				    	}
 				    	inputenabled=true;
 			    	}
 			    	}	
@@ -304,23 +298,149 @@ class GameFrame extends JFrame
 	
 	/*-------------Selection-functions------------------*/
 		
+		//tests whether move is valid
+		public boolean testMove(Actor piece, Node c)
+		{
+			Node presentcell = piece.currentcell;
+			Node tempcell = new Node();
+			
+			int oldAtkRisk = kingPos[currentturn].getAttackRisk(currentturn);
+			int newAtkRisk = 0;
+			for(Actor a : Actors)
+				a.setRange(false);
+			
+			//phantom movement -- may need to be updated to ensure pieces do not actually move on the board
+			if(c.actor != null)
+				c.actor.moveTo(tempcell);
+			piece.moveTo(c);
+			
+			//calculate what attack risk would be after move
+			for(Actor a : Actors)
+				a.setRange(true);
+			newAtkRisk = kingPos[currentturn].getAttackRisk(currentturn);
+			
+			//set everything back to normal: 
+			for(Actor a : Actors)
+				a.setRange(false);      
+			piece.moveTo(presentcell);
+			tempcell.actor.moveTo(c);
+			for(Actor a : Actors)
+				a.setRange(true);
+			
+			//if this move put the king in danger, it is invalid and cannot be taken
+			return (newAtkRisk > oldAtkRisk);
+		}
+		
+		public void castling(Node c)
+		{
+			c.actor.firstMove = false;
+			selected_piece.firstMove = false;
+			
+			int left, right;
+			if(currentturn == 0)
+			{
+				left = 1;
+				right = 3;
+			}
+			else
+			{
+				left = 3;
+				right = 1;
+			}
+			
+			//kingside castling
+			if(selected_cell.adgNodes[right].adgNodes[right].adgNodes[right] == c)
+			{
+				selected_piece.moveTo(selected_cell.adgNodes[right].adgNodes[right]);
+				c.actor.moveTo(c.adgNodes[left].adgNodes[left]);
+			}
+			else  //queenside castling
+			{
+				selected_piece.moveTo(selected_cell.adgNodes[left].adgNodes[left]);
+				c.actor.moveTo(c.adgNodes[right].adgNodes[right].adgNodes[right]);
+			}
+			kingPos[currentturn] = selected_piece.currentcell;   //update position of king
+		}
+		
+		//if pawn was moved, firstMove is set to false & checks for enPassant conditions
+		//important to note this is called AFTER selected_piece is moved to new cell
+		public void pawnCheck()
+		{
+			if(selected_piece.ID == 0)                  //if piece is pawn
+			{ 
+				selected_piece.enPassantLeft = false;
+				selected_piece.enPassantRight = false; 
+				
+				int dir, rdir;                          //direction needed for checks(rdir = reverse direction)
+				if(currentturn == 0)
+				{	
+					dir = 0;
+					rdir = 2;
+				}
+				else
+				{	
+					dir = 2;
+					rdir = 0; 
+				}
+				
+				//if(pawn has reached end of board, it must be promoted)
+				if(selected_piece.currentcell.adgNodes[dir] == null)
+					pawnPromotion(selected_piece);
+				//if pawn has captured the opponent's pawn through en passant
+				else if(enPassantCell != null && selected_piece.currentcell.adgNodes[rdir] == enPassantCell)
+					selected_piece.currentcell.adgNodes[rdir].actor.kill();
+				else if(selected_piece.firstMove)            //if this is pawn's first move
+				{
+					selected_piece.firstMove = false; 
+					//if(piece was moved two spaces forward) 
+					if(selected_cell.adgNodes[dir].adgNodes[dir] == selected_piece.currentcell)
+					{
+						enPassantCell = selected_piece.currentcell;
+						if(selected_piece.currentcell.adgNodes[1].occupied && 
+						   selected_piece.currentcell.adgNodes[1].actor.factionID != currentturn &&
+						   selected_piece.currentcell.adgNodes[1].actor.ID == 0)
+						{
+							if(currentturn == 0)
+								selected_piece.currentcell.adgNodes[1].actor.enPassantRight = true;
+							else 
+								selected_piece.currentcell.adgNodes[1].actor.enPassantLeft = true; 
+						}
+						if(selected_piece.currentcell.adgNodes[3].occupied && 
+						   selected_piece.currentcell.adgNodes[3].actor.factionID != currentturn &&
+						   selected_piece.currentcell.adgNodes[3].actor.ID == 0)
+						{
+							if(currentturn == 0)
+								selected_piece.currentcell.adgNodes[3].actor.enPassantLeft = true;
+							else 
+								selected_piece.currentcell.adgNodes[3].actor.enPassantRight = true; 
+						}
+						enPassantCell = selected_piece.currentcell;
+						return; 
+					}
+				}
+				enPassantCell = null; 
+			}
+		}
+		
 		public void movehighlight(Actor Piece,boolean highlighted)
 		{
 			Piece.highlight(highlighted);
 		}
+		
 		//selection functions
 		protected void unselectpiece() {
-			movehighlight(selected_piece,false);
-			selected_piece=null;
+			movehighlight(selected_cell.actor,false);
+			selected_cell=null;
 		}
 	
 	
-		protected void select(Actor piece) {
-			if(selected_piece!=null)unselectpiece();
-			movehighlight(piece,true);
-			selected_piece=piece;
-			
+		protected void select(Node piece) {
+			if(selected_cell != null)         //if player had previously selected an item 
+				unselectpiece();              //de-highlight the previous selection 
+			movehighlight(piece.actor,true);
+			selected_cell = piece; 
 		}
+		
 		protected void endturn() {
 			update();
 			if(kings[currentturn^1]!=null&&kings[currentturn^1].currentcell!=null) {
@@ -337,6 +457,10 @@ class GameFrame extends JFrame
 			
 			currentturn=(currentturn+1)%2;
 			selected_piece=null;
+			selected_cell = null;
+			kingAtkRisk = kingPos[currentturn].getAttackRisk(currentturn);
+			if(kingPos[currentturn].getAttackRisk(currentturn) > 0)
+				kingIsInCheck = true; 
 		}
 		
 		protected void update()
@@ -643,6 +767,7 @@ class GameFrame extends JFrame
 			addPiece(new Bishop(0),2,0);//white Bishop1
 			addPiece(new Bishop(0),5,0);//white Bishop2
 			addPiece(kings[0],3,0);//white King
+			kingPos[0] = kings[0].currentcell;
 			addPiece(new Queen(0),4,0);//white Queen
 			
 			
@@ -657,6 +782,7 @@ class GameFrame extends JFrame
 			addPiece(new Bishop(1),2,7);//black Bishop1
 			addPiece(new Bishop(1),5,7);//black Bishop2
 			addPiece(kings[1],4,7);//black King
+			kingPos[1] = kings[1].currentcell;
 			addPiece(new Queen(1),3,7);
 			//addPiece(new Queen(1),3,7);//black Queen
 			//addPiece(new Pawn(cellgrid[3][7],0));//black Queen
