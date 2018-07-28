@@ -501,7 +501,8 @@ class GameFrame extends JFrame
 					if(selected_cell.adgNodes[dir].adgNodes[dir] == selected_piece.currentcell)
 					{
 						enPassantCell = selected_piece.currentcell;
-						if(selected_piece.currentcell.adgNodes[1].occupied && 
+						if(selected_piece.currentcell.adgNodes[1] != null && 
+						   selected_piece.currentcell.adgNodes[1].occupied && 
 						   selected_piece.currentcell.adgNodes[1].actor.factionID != currentturn &&
 						   selected_piece.currentcell.adgNodes[1].actor.ID == 0)
 						{
@@ -510,7 +511,8 @@ class GameFrame extends JFrame
 							else 
 								selected_piece.currentcell.adgNodes[1].actor.enPassantLeft = true; 
 						}
-						if(selected_piece.currentcell.adgNodes[3].occupied && 
+						if(selected_piece.currentcell.adgNodes[3] != null && 
+						   selected_piece.currentcell.adgNodes[3].occupied && 
 						   selected_piece.currentcell.adgNodes[3].actor.factionID != currentturn &&
 						   selected_piece.currentcell.adgNodes[3].actor.ID == 0)
 						{
