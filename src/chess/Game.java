@@ -13,11 +13,6 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Stack;
 import java.util.Vector;
-import java.awt.Graphics;
-import java.awt.Color;
-import javax.swing.JPanel;
-import javax.swing.JFrame;
-import javax.swing.Timer;
 
 import org.omg.IOP.ExceptionDetailMessage;
 
@@ -31,15 +26,13 @@ public class Game
 	// execute application
 	public static void main( String args[] )
 	{
-	
-
-	   gameframe = new GameFrame();
-
+		   gameframe = new GameFrame();
 	} // end main
 	
 	
 }
 
+<<<<<<< HEAD
 class GameFrame extends JFrame
 {
 	GridPanel GP;
@@ -368,8 +361,15 @@ class GameFrame extends JFrame
 		{
 			if(selected_piece.ID == 0)                  //if piece is pawn
 			{ 
-				selected_piece.enPassantLeft = false;
-				selected_piece.enPassantRight = false; 
+				if(enPassantCell != null)
+				{
+					if(enPassantCell.adgNodes[1] != null)
+						if(enPassantCell.adgNodes[1].occupied)
+							enPassantCell.adgNodes[1].actor.enPassantLeft = enPassantCell.adgNodes[3].actor.enPassantRight = false; 
+					if(enPassantCell.adgNodes[3] != null)
+						if(enPassantCell.adgNodes[3].occupied)
+							enPassantCell.adgNodes[3].actor.enPassantLeft = enPassantCell.adgNodes[3].actor.enPassantRight = false;
+				}
 				
 				int dir, rdir;                          //direction needed for checks(rdir = reverse direction)
 				if(currentturn == 0)
@@ -388,7 +388,10 @@ class GameFrame extends JFrame
 					pawnPromotion(selected_piece);
 				//if pawn has captured the opponent's pawn through en passant
 				else if(enPassantCell != null && selected_piece.currentcell.adgNodes[rdir] == enPassantCell)
+				{
 					selected_piece.currentcell.adgNodes[rdir].actor.kill();
+					selected_piece.enPassantLeft = selected_piece.enPassantRight = false;
+				}
 				else if(selected_piece.firstMove)            //if this is pawn's first move
 				{
 					selected_piece.firstMove = false; 
@@ -874,4 +877,10 @@ class GameFrame extends JFrame
 		}
 	
 	}
+=======
+ class publicdata {
+	static int height=300*6;
+	static int width=300*6;
+
+>>>>>>> branch 'master' of https://github.com/jva15/Chess.git
 }
