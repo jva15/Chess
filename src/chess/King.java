@@ -68,6 +68,36 @@ public class King extends Actor {
 					if(n.adgNodes[3].getAttackRisk(factionID) == 0)
 						n.adgNodes[3].highlighted = b;
 		}	
+		n = currentcell;
+		
+		//castling support:
+		if(firstMove)
+		{
+			while(n.adgNodes[1] != null)
+			{
+				n = n.adgNodes[1];
+				if(n.adgNodes[1] == null)
+				{
+					if(n.adgNodes[1].occupied && n.adgNodes[1].actor.firstMove && n.adgNodes[1].actor.ID == 4
+						&& n.adgNodes[1].getAttackRisk(factionID) == 0)
+						n.adgNodes[1].highlighted = b;
+				}
+				else if(n.occupied || n.getAttackRisk(factionID) != 0)
+					break;
+			}
+			while(n.adgNodes[3] != null)
+			{
+				n = n.adgNodes[3];
+				if(n.adgNodes[3] == null)
+				{
+					if(n.adgNodes[3].occupied && n.adgNodes[3].actor.firstMove && n.adgNodes[3].actor.ID == 4 
+						&& n.adgNodes[3].getAttackRisk(factionID) == 0)
+						n.adgNodes[3].highlighted = b;
+				}
+				else if(n.occupied || n.getAttackRisk(factionID) != 0)
+					break;
+			}
+		}
 	}
 
 	public void setRange(boolean inrange)

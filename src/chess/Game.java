@@ -36,7 +36,7 @@ public class Game
 }
 
  class publicdata {
-	static int height=500;//300*6;
-	static int width=800;//300*6;
-	
+	static int height=300*6;
+	static int width=300*6;
+
 }

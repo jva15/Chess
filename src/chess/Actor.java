@@ -26,6 +26,11 @@ import javax.swing.Timer;
 	
 public abstract class Actor extends JPanel implements ActionListener{//extend button
 	
+	public boolean firstMove = true;   //true if actor has not moved yet, false otherwise
+	                                   //only needed for pawns(for enPassant & double moves on first turns), 
+	                                   //and kings and rooks(for castling)
+	public boolean enPassantRight = false, enPassantLeft = false; //only used for pawns
+	
 	public static int TotalImages;
 	public static String[] imagefilelist= {"chess_pieces.png","test_character.png"};
 	public static BufferedImage[] imageset;
@@ -193,6 +198,12 @@ public abstract class Actor extends JPanel implements ActionListener{//extend bu
 		
 	}
 	
+	//tests whether move is valid
+	//public boolean testMove(Node newcell)
+	{
+		
+	}
+	
 	public abstract void setRange(boolean inrange); //uses the classmember factionId aswell
 
 		/*TODO: Impliment setRange for each of the subclasses of Actor
@@ -280,6 +291,8 @@ public abstract class Actor extends JPanel implements ActionListener{//extend bu
 			}
 		}
 	}
+	
+	
 	
 	//sets attack risk of cells in horizontal/vertical line of piece:
 	protected void lineAttack(boolean inrange)
