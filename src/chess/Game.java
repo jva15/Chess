@@ -26,10 +26,7 @@ public class Game
 	// execute application
 	public static void main( String args[] )
 	{
-	
-
-	   gameframe = new GameFrame();
-
+		   gameframe = new GameFrame();
 	} // end main
 	
 	

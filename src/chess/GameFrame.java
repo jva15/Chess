@@ -140,12 +140,7 @@ class GameFrame extends JFrame
 			}
 		});
 		
-		//LoadGrid();
-		//setSize(300*6,300*6);
 		setSize(publicdata.width,publicdata.height);
-		
-		//setLayout((LayoutManager) new Box(BoxLayout.X_AXIS));
-		
 		
 		LoadStartScreen();
 		setVisible(true);
@@ -475,6 +470,7 @@ class GameFrame extends JFrame
 		//important to note this is called AFTER selected_piece is moved to new cell
 		public void pawnCheck()
 		{
+			
 			if(selected_piece.ID == 0)                  //if piece is pawn
 			{ 
 				selected_piece.enPassantLeft = false;
@@ -562,10 +558,6 @@ class GameFrame extends JFrame
 				
 				
 			}
-			else {
-				
-	
-			}	
 			
 			currentturn=(currentturn+1)%2;
 			selected_piece=null;
@@ -583,7 +575,6 @@ class GameFrame extends JFrame
 			//update the ranges
 			for(Actor A: Actors)
 			{
-				//System.out.println(A.ID);
 				
 				A.setRange(true);
 			
@@ -719,9 +710,6 @@ class GameFrame extends JFrame
 				}
 					
 				
-				 /*{rdx==-1&&rdy=1;}else{rdx==1;rdy==-1;}}
-				{rdx==-1&&rdy==-1;}else{rdx==1;rdy==1;}}
-			*/
 				int tempcolor;
 				 if(cellgrid[i][j].getAttackRisk(currentturn)>0) {
 					 tempcolor=225;
@@ -821,7 +809,6 @@ class GameFrame extends JFrame
 			return nodeArr;
 			
 		}
-		//sets the pieces on the board
 		
 		
 		
