@@ -6,6 +6,8 @@ public class Pawn extends Actor {
 	
 	public boolean firstMove = true;   //true if pawn has not moved yet, false otherwise
 	private int direction;              //pawns cannot move backward
+	int ID=0;
+	
 	
 	public Pawn() {
 		super();
@@ -22,7 +24,6 @@ public class Pawn extends Actor {
 	}
 	
 	public void setupID(){
-		ID=0;
 		
 		if(factionID == 0)
 			direction = 0;
