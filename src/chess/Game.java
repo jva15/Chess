@@ -263,11 +263,11 @@ class GameFrame extends JFrame
 				    				castling(cell);
 				    			else
 				    			{
-				    				if(testMove(selected_piece, cell))
-				    				{
-				    					displayMoveError();
-				    					return;
-				    				}
+				    				//if(testMove(selected_piece, cell))
+				    				//{
+				    					//displayMoveError();
+				    					//return;
+				    				//}
 				    				selected_piece.moveTo(cell);           //move piece to cell
 				    				//if(piece is king or rook, we need to keep track of whether it is first move or not)
 				    				//for castling purposes
@@ -395,7 +395,6 @@ class GameFrame extends JFrame
 					//if(piece was moved two spaces forward) 
 					if(selected_cell.adgNodes[dir].adgNodes[dir] == selected_piece.currentcell)
 					{
-						enPassantCell = selected_piece.currentcell;
 						if(selected_piece.currentcell.adgNodes[1].occupied && 
 						   selected_piece.currentcell.adgNodes[1].actor.factionID != currentturn &&
 						   selected_piece.currentcell.adgNodes[1].actor.ID == 0)
