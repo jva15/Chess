@@ -38,7 +38,7 @@ public abstract class Actor extends JPanel implements ActionListener{//extend bu
 	
 	//image access info  
 	int pixellength=27;//
-	int pixelheight=38;//
+	int pixelheight=39;//
 	int imagefileindex=0;//imagefileindex
 	int I_index_x,I_index_y;//sprite selectors
 	public String imagefile="chess_pieces.png";
@@ -54,13 +54,14 @@ public abstract class Actor extends JPanel implements ActionListener{//extend bu
 	Rectangle Boundingbox;//cause setBounds took too much processing 
 	boolean set_to_a_cell=false;
 	
-
-	
-	
-	
-	Actor(){
+	public Actor()
+	{
 		super();
-		
+		setOpaque(false);
+		//resizing
+		ysize= (int)((((double)ysize)/(300*6))*publicdata.height);
+		xsize= (int)((((double)xsize)/(300*6))*publicdata.width);
+
 		if(!imageisset)
 		{
 			TotalImages=imagefilelist.length;
@@ -73,6 +74,7 @@ public abstract class Actor extends JPanel implements ActionListener{//extend bu
 				try {
 					imageisset=true;
 					imageset[i]=ImageIO.read(new File(System.getProperty("user.dir")+"\\src\\chess\\" + imagefile));
+					
 				}catch(IOException e)
 				{
 					imageisset=false;
@@ -89,7 +91,7 @@ public abstract class Actor extends JPanel implements ActionListener{//extend bu
 			//setVisible(false);
 	}
 	//create actor and associate to the cell
-	Actor(int fac)
+	public Actor(int fac)
 	{
 		this();
 		factionID=fac;
