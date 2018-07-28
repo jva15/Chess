@@ -67,7 +67,6 @@ public class Pawn extends Actor {
 			if(firstMove)
 				if(!n.occupied && !n.adgNodes[direction].occupied)
 					{n.adgNodes[direction].highlighted = b;
-					firstMove=false;
 					}
 		}	
 	}
