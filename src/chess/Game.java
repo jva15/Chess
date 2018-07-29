@@ -21,7 +21,7 @@ import javax.swing.*;
 public class Game
 { //
 	
-	public Actor Actors[];
+	protected Actor Actors[];
 	static GameFrame gameframe;
 	// execute application
 	public static void main( String args[] )
@@ -36,7 +36,10 @@ public class Game
 }
 
  class publicdata {
-	static int height=1000;
-	static int width=1000;
+	public static int height=1000;
+	public static int width=1000;
+	
+	public static int getW() {return width;}
+	public static int getH() {return height;}
 	public static int getBaseSize() {return 1800;}
 }

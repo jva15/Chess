@@ -99,6 +99,12 @@ public class Sprite extends JPanel{
 	public int GetYoff() {return yoffset;}
 	public int GetXoff() {return xoffset;}
 	
+	public int GetXS() {return xsize;}
+	public int GetYS() {return ysize;}
+	
+	public void setS(int x, int y) { xsize=x;ysize=y;}
+	
+	
 	//set offset to the lower left corner of sprite
 	public void setatoffset(int ox, int oy) {
 		this.xoffset=ox;

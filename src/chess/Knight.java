@@ -15,12 +15,11 @@ public class Knight extends Actor {
 	}
 	public Knight(Node cell, int fac) {
 		super(cell, fac);
-		I_index_x=ID=5;
-		I_index_y=fac;
+		setupID();
 	}
 
 	public void setupID() {
-		I_index_x=ID=5;
+		I_index_x=ID=4;
 		I_index_y=factionID;
 	}
 	

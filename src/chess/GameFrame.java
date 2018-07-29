@@ -419,7 +419,6 @@ class GameFrame extends JFrame
 					    				}
 					    			}
 					    			pawnCheck();                               //performs functions related only to the pawn
-					    			
 					    			endturn();
 					    		}
 					    	}
@@ -905,10 +904,10 @@ class GameFrame extends JFrame
 			kings[1]=new King(1);
 			addPiece(new Rook(0),0,0);
 			addPiece(new Rook(0),7,0);
-			addPiece(new Knight(0),1,0);//white Knight1
-			addPiece(new Knight(0),6,0);//white Knight2
-			addPiece(new Bishop(0),2,0);//white Bishop1
-			addPiece(new Bishop(0),5,0);//white Bishop2
+			//addPiece(new Knight(0),1,0);//white Knight1
+			//addPiece(new Knight(0),6,0);//white Knight2
+			//addPiece(new Bishop(0),2,0);//white Bishop1
+			//addPiece(new Bishop(0),5,0);//white Bishop2
 			addPiece(kings[0],4,0);//white King
 			kingPos[0] = kings[0].currentcell;
 			addPiece(new Queen(0),3,0);//white Queen
@@ -919,13 +918,13 @@ class GameFrame extends JFrame
 		
 			addPiece(new Rook(1),0,placementoffset+7);//black rook1
 			addPiece(new Rook(1),7,placementoffset+7);//black rook2
-			addPiece(new Knight(1),1,placementoffset+7);;//black Knight1
-			addPiece(new Knight(1),6,placementoffset+7);;//black Knight2
-			addPiece(new Bishop(1),2,placementoffset+7);//black Bishop1
-			addPiece(new Bishop(1),5,placementoffset+7);//black Bishop2
+			//addPiece(new Knight(1),1,placementoffset+7);;//black Knight1
+			//addPiece(new Knight(1),6,placementoffset+7);;//black Knight2
+			//addPiece(new Bishop(1),2,placementoffset+7);//black Bishop1
+			//addPiece(new Bishop(1),5,placementoffset+7);//black Bishop2
 			addPiece(kings[1],3,placementoffset+7);//black King
 			kingPos[1] = kings[1].currentcell;
-			addPiece(new Queen(1),4,placementoffset+7);
+			//addPiece(new Queen(1),4,placementoffset+7);
 
 			if(WarMode)
 			{

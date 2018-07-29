@@ -76,9 +76,11 @@ public class King extends Actor {
 			while(n.adgNodes[1] != null)
 			{
 				n = n.adgNodes[1];
-				if(n.adgNodes[1] == null)
+				if(n.adgNodes[1] != null)
 				{
-					if(n.adgNodes[1].occupied && n.adgNodes[1].actor.firstMove && n.adgNodes[1].actor.ID == 4
+					if(n.adgNodes[1].occupied && 
+							n.adgNodes[1].actor.firstMove && 
+							n.adgNodes[1].actor.ID == 4
 						&& n.adgNodes[1].getAttackRisk(factionID) == 0)
 						n.adgNodes[1].highlighted = b;
 				}

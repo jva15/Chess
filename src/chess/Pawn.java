@@ -68,9 +68,9 @@ public class Pawn extends Actor {
 				if(n.adgNodes[3].occupied && n.adgNodes[3].actor.factionID != this.factionID)
 					n.adgNodes[3].highlighted = b;
 			if(enPassantRight)
-				n.adgNodes[right].highlighted = b;
+				n.adgNodes[2].highlighted = b;
 			if(enPassantLeft)
-				n.adgNodes[left].highlighted = b; 
+				n.adgNodes[0].highlighted = b; 
 			if(firstMove)
 				if(!n.occupied && !n.adgNodes[direction].occupied)
 					n.adgNodes[direction].highlighted = b;

@@ -14,14 +14,13 @@ public class Rook extends Actor {
 		setupID();
 	}
 
-	public void setupID() {
-		I_index_x=ID=4;
+	private void setupID() {
+		I_index_x=ID=5;
 		I_index_y=factionID;
 	}
 	public Rook(Node cell, int fac) {
 		super(cell, fac);
-		I_index_x=ID=4;
-		I_index_y=fac;
+		setupID();
 		
 	}
 
