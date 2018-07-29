@@ -1,6 +1,7 @@
 package src.chess;
 
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -16,6 +17,7 @@ import java.awt.event.MouseMotionListener;
 import java.util.LinkedList;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -39,10 +41,12 @@ class GameFrame extends JFrame
 	int placementoffset=0;
 	King kings[]=new King[2];
 	static int gaurdchannels=0;
+	String players[]=new String[2];
 	JMenuBar menubar;
 	JMenu firstmenu;
 	JMenuItem newgame;
 	JMenuItem Warmode;
+	JLabel turnlabel;
 	Timer timer=new Timer(10,new ActionListener() {
 		
 		@Override
@@ -55,10 +59,21 @@ class GameFrame extends JFrame
 	private JMenuItem tostart;
 	private JMenuItem todesktop;
 	
+	
+	JPanel tempanel;
 	GameFrame()
 	{
 		super("Chess");
 		super.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		players[0]="Player 1's turn";
+		players[1]="Player 2's turn";
+		turnlabel=new JLabel(players[0]);
+		turnlabel.setVerticalTextPosition(JLabel.BOTTOM);
+		turnlabel.setHorizontalAlignment(JLabel.LEFT);
+		turnlabel.setVisible(true);
+		turnlabel.setSize(300, 300);
+		
+		
 		//setExtendedState(JFrame.MAXIMIZED_BOTH); 
 		
 		for(int i=0;i<2;i++)
@@ -147,6 +162,7 @@ class GameFrame extends JFrame
 		timer.start();
 	}
 	
+	
 
 	public void LoadStartScreen(){
 		Startscreen=new StartScreen();
@@ -160,11 +176,18 @@ class GameFrame extends JFrame
 	{
 		GP=new GridPanel();
 		add(GP);
-	
+		repaint();
 	}
 
 	protected void CallCheck()
 	{
+		
+	}
+	
+	protected void CallVictor(int playernum)
+	{
+		add(new VictorScreen(playernum));
+		repaint();
 		
 	}
 	
@@ -237,8 +260,6 @@ class GameFrame extends JFrame
 				gsize*=2;
 				//TODO: add additional actors
 			init();	
-			
-			
 		}
 		
 		int transx1,transy1;
@@ -257,18 +278,19 @@ class GameFrame extends JFrame
 			Actors=new LinkedList<Actor>();
 			Populate_board();	 
 			update();
+			add(turnlabel);
 		}
 		
 		
 		
 		public GridPanel() 
 		{
-			transy1=(int)((double)transy/(300*6)*publicdata.height);
-			transx1=(int)((double)transx/(300*6)*publicdata.width);
+			transy1=(int)((double)transy/(publicdata.getBaseSize())*publicdata.height);
+			transx1=(int)((double)transx/(publicdata.getBaseSize())*publicdata.width);
 			transx=transx1;
 			transy=transy1;
 			
-			cellsize=(int)((double)cellsize/(300*6)*publicdata.width);
+			cellsize=(int)((double)cellsize/(publicdata.getBaseSize())*publicdata.width);
 			
 			//restag
 			centerpoint[0]=x+((cellsize+cellspace)*gsize)/2-cellspace;//
@@ -340,11 +362,11 @@ class GameFrame extends JFrame
 				    	{
 					     	inputenabled=false;
 					    	mousepointer[0]=e.getX();
-					    	mousepointer[1]=(int)((e.getY()));//the calculation is grid based, so i morph the y so it simulates a reverted version of the grid(before the y shrink)
+					    	mousepointer[1]=(e.getY());//the calculation is grid based, so i morph the y so it simulates a reverted version of the grid(before the y shrink)
 					    	System.out.println(e.getX()+"  "+e.getY());
 					    	System.out.println(getComponentAt(mousepointer[0],(int)(mousepointer[1])).getClass().getName());
 					    	
-					    	if((getComponentAt(mousepointer[0],(int)(mousepointer[1])).getClass().getName().equals("src.chess.GameFrame$GridPanel")))
+					    	if(getComponentAt(mousepointer[0],(mousepointer[1])).getClass().getName().equals("src.chess.GameFrame$GridPanel"))
 					    	{//you selected the grid panel
 					    		mousepointer[1]=(int)((mousepointer[1]-transy)/0.3);
 					    		mousepointer[0]-= transx;
@@ -354,16 +376,25 @@ class GameFrame extends JFrame
 						    	if(tp[0]>=0&&tp[0]<gsize&&tp[1]>=0&&tp[1]<gsize)
 						    		cell=cellgrid[tp[0]][tp[1]];
 					    	}
-					    	else //actor selected
-					    	{
-				    			Piece=(Actor)getComponentAt(mousepointer[0],(int)(mousepointer[1]));
-				    			cell = Piece.currentcell;	
+					    	else if(getComponentAt(mousepointer[0],mousepointer[1]).getClass().getName().equals("javax.swing.JLabel")) {}
+					    	
+					    	else { //actor selected
+					    		
+					    		Piece=(Actor)getComponentAt(mousepointer[0],mousepointer[1]);
+				    			
+					    		cell = Piece.currentcell;	
+					    		
 					    	}
 					    	
 					    	if(cell != null)  //if a cell/actor was clicked
 					    	{
 					    		if(cell.occupied && cell.actor.factionID == currentturn)  //if player selected their own piece
-					    			select(cell);                                         //will run highlight function for actor on cell
+					    		{
+					    			if(selected_piece!=null&&selected_piece.factionID == currentturn )
+					    				unselectpiece();
+					    			if(selected_piece!=cell.actor)
+					    				select(cell.actor);    
+					    		}                                     //will run highlight function for actor on cell
 					    		else if(cell.highlighted)                                 //else if player chose cell to move to 
 					    		{	
 					    			selected_piece = selected_cell.actor; 
@@ -407,6 +438,8 @@ class GameFrame extends JFrame
 		{
 			Node presentcell = piece.currentcell;
 			Node tempcell = new Node();
+			boolean killedanActor=false;
+			
 			
 			int oldAtkRisk = kingPos[currentturn].getAttackRisk(currentturn);
 			int newAtkRisk = 0;
@@ -415,8 +448,12 @@ class GameFrame extends JFrame
 			
 			//phantom movement -- may need to be updated to ensure pieces do not actually move on the board
 			if(c.actor != null)
+			{
 				c.actor.moveTo(tempcell);
+				killedanActor=true;
+			}
 			piece.moveTo(c);
+			
 			
 			//calculate what attack risk would be after move
 			for(Actor a : Actors)
@@ -426,11 +463,14 @@ class GameFrame extends JFrame
 			//set everything back to normal: 
 			for(Actor a : Actors)
 				a.setRange(false);      
+			
 			piece.moveTo(presentcell);
-			tempcell.actor.moveTo(c);
+			
+			
+			if(killedanActor)	tempcell.actor.moveTo(c);
+			
 			for(Actor a : Actors)
 				a.setRange(true);
-			
 			//if this move put the king in danger, it is invalid and cannot be taken
 			return (newAtkRisk > oldAtkRisk);
 		}
@@ -535,23 +575,31 @@ class GameFrame extends JFrame
 		}
 		//selection functions
 		protected void unselectpiece() {
-			movehighlight(selected_piece,false);
+			if(selected_piece!=null)movehighlight(selected_piece,false);
 			selected_piece=null;
+			selected_cell=null;
 		}
 		protected void select(Actor piece) {
 			if(selected_piece!=null)
 				unselectpiece();
 			movehighlight(piece,true);
 			selected_piece=piece;
+			selected_cell=piece.currentcell;
 		}
 		protected void select(Node piece) {
 			if(selected_cell != null)         //if player had previously selected an item 
 				unselectpiece();              //de-highlight the previous selection 
 			movehighlight(piece.actor,true);
 			selected_cell = piece; 
+			selected_piece = piece.actor;
 		}
 		
 		protected void endturn() {
+			for(int i=0;i<Actors.size();i++)
+				if(Actors.get(i).currentcell==null)
+				{
+					Actors.remove(i);
+				}
 			update();
 			if(kings[currentturn^1]!=null&&kings[currentturn^1].currentcell!=null) {
 				
@@ -562,11 +610,13 @@ class GameFrame extends JFrame
 			}
 			
 			currentturn=(currentturn+1)%2;
-			selected_piece=null;
-			selected_cell = null;
+			unselectpiece();
+			//selected_piece=null;
+			//selected_cell = null;
 			kingAtkRisk = kingPos[currentturn].getAttackRisk(currentturn);
 			if(kingPos[currentturn].getAttackRisk(currentturn) > 0)
 				kingIsInCheck = true; 
+			turnlabel.setText(players[currentturn]);
 		}
 		
 		protected void update()
@@ -594,16 +644,8 @@ class GameFrame extends JFrame
 			
 			
 		}
-		protected void CallCheck()
-		{
-			
-			
-		}
-		protected void CallVictor()
-		{
-			
-			
-		}
+		
+		
 	/*-------------Rendering------------------*/
 	
 		public void actionPerformed(ActionEvent e)
@@ -621,7 +663,10 @@ class GameFrame extends JFrame
 		   super.paintComponent( g ); // call superclass's paintComponent 
 		   Rotate_NodeArray(cellgrid);// update the virtual offsets
 		   Graphics2D g2d = (Graphics2D)g;
-		    //x=y=getHeight()/2;
+		   publicdata.height=getParent().getHeight();
+		   publicdata.width=getParent().getWidth();
+		   
+		   //x=y=getHeight()/2;
 		    dx=dy=0;
 		    
 		    //does the highlight glow effect
@@ -952,8 +997,8 @@ class GameFrame extends JFrame
 				nodeArr[i][j].Virtualoffsetx=transx+focalpointx+rotoffx(ypof-focalpointy,xpof-focalpointx,Math.toRadians(rad));
 				nodeArr[i][j].Virtualoffsety=(int)(transy)+(int)(((focalpointy+rotoffy(ypof-focalpointy,xpof-focalpointx,Math.toRadians(rad))+(int)(cellsize/2)))*0.3);
 
-				//nodeArr[i][j].Virtualoffsetx=(int)((double)nodeArr[i][j].Virtualoffsetx/(300*6)*publicdata.width); //restag
-				//nodeArr[i][j].Virtualoffsety=(int)((double)nodeArr[i][j].Virtualoffsety/(300*6)*publicdata.height); //restag
+				//nodeArr[i][j].Virtualoffsetx=(int)((double)nodeArr[i][j].Virtualoffsetx/(publicdata.getBaseSize())*publicdata.width); //restag
+				//nodeArr[i][j].Virtualoffsety=(int)((double)nodeArr[i][j].Virtualoffsety/(publicdata.getBaseSize())*publicdata.height); //restag
 				
 			}	
 			

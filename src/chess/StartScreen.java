@@ -19,11 +19,12 @@ public class StartScreen extends JPanel{
 	String imagefile="Titlescreen.jpg";
 	public StartScreen() {
 		super();
+
 		//setBounds(0,0,getParent().getWidth(),getParent().getHeight());
 		try {
-			image=ImageIO.read(new File(System.getProperty("user.dir")+"\\src\\chess\\" + imagefile));
+			image= ImageIO.read(ClassLoader.getSystemResourceAsStream(imagefile));
 		}catch(IOException e)
-		{System.out.println("can't load "+System.getProperty("user.dir")+"\\src\\chess\\" + imagefile);}
+		{System.out.println(imagefile);}
 		
 		
 		

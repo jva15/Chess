@@ -27,13 +27,16 @@ public class Game
 	public static void main( String args[] )
 	{
 		   gameframe = new GameFrame();
+		   //gameframe.CallVictor(1);
+	
+	
 	} // end main
 	
 	
 }
 
  class publicdata {
-	static int height=300*6;
-	static int width=300*6;
-
+	static int height=1000;
+	static int width=1000;
+	public static int getBaseSize() {return 1800;}
 }
