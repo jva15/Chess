@@ -24,37 +24,18 @@ import javax.swing.Timer;
 	
 	
 	
-public abstract class Actor extends JPanel implements ActionListener{//extend button
+public abstract class Actor extends Sprite implements ActionListener{//extend button
 	
 	public boolean firstMove = true;   //true if actor has not moved yet, false otherwise
 	                                   //only needed for pawns(for enPassant & double moves on first turns), 
 	                                   //and kings and rooks(for castling)
 	public boolean enPassantRight = false, enPassantLeft = false; //only used for pawns
-	
-	public static int TotalImages;
-	public static String[] imagefilelist= {"chess_pieces.png","test_character.png"};
-	public static BufferedImage[] imageset;
-	public static boolean imageisset=false;
 	int ID;
 	int factionID;//0: player 1, 1 player 2
 	Node currentcell;//keep this in mind when changing the Actors position.
-	boolean Active;//
+	
 
 	
-	//image access info  
-	int pixellength=27;//
-	int pixelheight=39;//
-	int imagefileindex=0;//imagefileindex
-	int I_index_x,I_index_y;//sprite selectors
-	public String imagefile="chess_pieces.png";
-	
-	
-	
-	//frame draw info
-	int ratio=1;
-	int xoffset=0,yoffset=0;
-	int xsize=70;
-	int ysize=(int)(70*2);
 	boolean highlighted;
 	Rectangle Boundingbox;//cause setBounds took too much processing 
 	boolean set_to_a_cell=false;
@@ -62,34 +43,7 @@ public abstract class Actor extends JPanel implements ActionListener{//extend bu
 	public Actor()
 	{
 		super();
-		setOpaque(false);
-		//resizing
-		ysize= (int)((((double)ysize)/(300*6))*publicdata.height);
-		xsize= (int)((((double)xsize)/(300*6))*publicdata.width);
-
-		if(!imageisset)
-		{
-			TotalImages=imagefilelist.length;
-			imageset= new BufferedImage[TotalImages];
-			
-			for(int i=0;i<TotalImages;i++)
-			{
-				
-				imagefile=imagefilelist[i];
-				try {
-					imageisset=true;
-					imageset[i]=ImageIO.read(new File(System.getProperty("user.dir")+"\\src\\chess\\" + imagefile));
-					
-				}catch(IOException e)
-				{
-					imageisset=false;
-					System.out.println("can't load "+ System.getProperty("user.dir")+"\\src\\chess\\"+imagefile);}
-			}
-		}
-			I_index_x=I_index_y=0;
-			highlighted=false;
-		
-			setVisible(true);
+		highlighted=false;
 			
 			
 			//addActionListener(this);
@@ -108,20 +62,8 @@ public abstract class Actor extends JPanel implements ActionListener{//extend bu
 	{
 		this(fac);
 		setCell(cell);
-		//setatoffset(cell.Virtualoffsetx,cell.Virtualoffsety);
 		Active=true;
 	}
-	
-	
-	
-	public int GetY() {return yoffset;}
-	//set offset to the lower left corner of sprite
-	public void setatoffset(int ox, int oy) {
-		this.xoffset=ox;
-		this.yoffset=oy-(int)(ysize);
-		
-	}
-	
 	
 	
 	public void updatebycell()
@@ -172,12 +114,7 @@ public abstract class Actor extends JPanel implements ActionListener{//extend bu
 		set_to_a_cell=false;
 		
 	}
-	public void setoffset(int ox,int oy) {
-		
-		this.xoffset=ox;
-		this.yoffset=oy;
 	
-	}
 	
 	
 	public void Drawframe(Graphics2D g2d) {
@@ -189,47 +126,16 @@ public abstract class Actor extends JPanel implements ActionListener{//extend bu
 	}
 	public void moveTo(Node newcell) {
 		
-		//setRange(false);
+		
 		highlight(false);
 		unsetCell();
 		if (newcell.actor!=null)newcell.actor.kill();
 		setCell(newcell);
-		//setRange(true);
-		
-	}
-	
-	//tests whether move is valid
-	//public boolean testMove(Node newcell)
-	{
 		
 	}
 	
 	public abstract void setRange(boolean inrange); //uses the classmember factionId aswell
 
-		/*TODO: Impliment setRange for each of the subclasses of Actor
-		* similar to highlight but instead of highlighting
-		* it should call setAttackrisk(inrange,factionID) on the cell
-		* remember not to let the piece setRange on itself
-		* 
-		* this would be a good opportunity to practice with iterators to avoid repeating code for both 
-		* highlight and setRange
-		*/
-		
-		
-
-	
-	public void paintComponent(Graphics g){
-		if(Active){
-		super.paintComponent( g );
-		Graphics2D g2d = (Graphics2D)g;
-		
-		g2d.drawImage(imageset[imagefileindex],
-			       0,0,xsize,ysize,//
-				   //xoffset,yoffset,xoffset+xsize, yoffset+ysize,//
-			       pixellength*I_index_x, pixelheight*I_index_y, pixellength*I_index_x+pixellength, pixelheight*I_index_y+pixelheight,
-			       null);
-		}
-	}
 	
 	public abstract void highlight(boolean b);  //abstract method will be defined in subclasses
 	
