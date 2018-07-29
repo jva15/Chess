@@ -38,9 +38,16 @@ public class Pawn extends Actor {
 			left = 1; 
 		}
 		
+		
+		
 		I_index_x=0;
 		I_index_y=factionID;
+		ypicoffset=6;
+		//pixelheight-=ypicoffset;
 		
+		
+		
+		//ysize-= (ysize-6)/publicdata.getBaseSize()
 	}
 	
 	//needs to add functionality for en passant: 
@@ -48,6 +55,7 @@ public class Pawn extends Actor {
 	{
 		Node n = currentcell;
 		n.highlighted = b;
+		
 		if(n.adgNodes[direction] != null)
 		{
 			n = n.adgNodes[direction];
@@ -57,7 +65,7 @@ public class Pawn extends Actor {
 				if(n.adgNodes[1].occupied && n.adgNodes[1].actor.factionID != this.factionID)
 					n.adgNodes[1].highlighted = b;
 			if(n.adgNodes[3] != null)
-				if(n.adgNodes[3].occupied && n.adgNodes[2].actor.factionID != this.factionID)
+				if(n.adgNodes[3].occupied && n.adgNodes[3].actor.factionID != this.factionID)
 					n.adgNodes[3].highlighted = b;
 			if(enPassantRight)
 				n.adgNodes[right].highlighted = b;
@@ -74,9 +82,12 @@ public class Pawn extends Actor {
 	{
 		Node n = currentcell; 
 		n = n.adgNodes[direction];
-		if(n.adgNodes[1] != null)
-			n.adgNodes[1].setAttackRisk(inrange, factionID);
-		if(n.adgNodes[3] != null)
-			n.adgNodes[3].setAttackRisk(inrange, factionID);
+		if(n!=null)
+		{
+			if(n.adgNodes[1] != null)
+				n.adgNodes[1].setAttackRisk(inrange, factionID);
+			if(n.adgNodes[3] != null)
+				n.adgNodes[3].setAttackRisk(inrange, factionID);
+		}
 	}	
 }
