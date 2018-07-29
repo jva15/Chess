@@ -42,6 +42,12 @@ class GameFrame extends JFrame
 	King kings[]=new King[2];
 	static int gaurdchannels=0;
 	String players[]=new String[2];
+	public boolean inputenabled=false;
+	int currentturn =0;
+	
+	
+	
+	
 	JMenuBar menubar;
 	JMenu firstmenu;
 	JMenuItem newgame;
@@ -170,8 +176,7 @@ class GameFrame extends JFrame
 		repaint();
 	}
 	
-	public void LoadMainmenu() {}
-	
+		
 	public void LoadGrid()
 	{
 		GP=new GridPanel();
@@ -179,16 +184,16 @@ class GameFrame extends JFrame
 		repaint();
 	}
 
-	protected void CallCheck()
+	protected void callCheck(boolean theplayersincheck)
 	{
-		
+		if(theplayersincheck)turnlabel.setText(players[currentturn]+"\nCheck!!");
+		else turnlabel.setText(players[currentturn]+"'s turn");	
 	}
 	
-	protected void CallVictor(int playernum)
+	protected void callCheckMate(int playernum)
 	{
-		add(new VictorScreen(playernum));
+		add(new VictorScreen(playernum^1));
 		repaint();
-		
 	}
 	
 	public void pawnPromotion(Actor propawn)
@@ -204,6 +209,7 @@ class GameFrame extends JFrame
 
 	class GridPanel extends JLayeredPane implements ActionListener
 	{
+		
 		//public Actor[] Actors;//list of actors
 		public LinkedList<Actor> Actors;
 		private int delay = 10;//delay for the FPS timer
@@ -229,6 +235,7 @@ class GameFrame extends JFrame
 		Node[] kingPos = new Node[2];   //keeps track of current king position at every time 
 		Actor selected_piece = null;    
 		Node selected_cell = null; 
+		Actor lastpiece=null;
 		Node enPassantCell = null;      //stores location of cell where a potential en passant can occur
 		int kingAtkRisk;                //stores the current attack risk of the king's cell
 		boolean kingIsInCheck = false;
@@ -244,8 +251,6 @@ class GameFrame extends JFrame
 		private int dx = 0;		// reserved for player gridmovement
 		private int dy = 0;		// increment amount (y coord)
 		
-		public boolean inputenabled=true;
-		int currentturn =0;
 		int Highlightvalue=255;
 		int dHighlightvalue=1;
 		Point[] graphingpoints = new Point[4];
@@ -279,6 +284,7 @@ class GameFrame extends JFrame
 			Populate_board();	 
 			update();
 			add(turnlabel);
+			inputenabled=true;
 		}
 		
 		
@@ -408,6 +414,7 @@ class GameFrame extends JFrame
 					    					return;
 					    				}
 					    				selected_piece.moveTo(cell);           //move piece to cell
+					    				lastpiece=selected_piece;
 					    				//if(piece is king or rook, we need to keep track of whether it is first move or not)
 					    				//for castling purposes
 					    				if(selected_piece.ID == 4)
@@ -418,8 +425,13 @@ class GameFrame extends JFrame
 					    					kingPos[currentturn] = selected_piece.currentcell;
 					    				}
 					    			}
+					    			
 					    			pawnCheck();                               //performs functions related only to the pawn
 					    			endturn();
+					    			CheckKing();
+					    			
+					    			
+					    			
 					    		}
 					    	}
 					    	inputenabled=true;
@@ -592,6 +604,72 @@ class GameFrame extends JFrame
 			selected_cell = piece; 
 			selected_piece = piece.actor;
 		}
+		//----------------end game functions
+		
+		//checks to see if the current king is in check or checkmate and react accordingly 
+		public void CheckKing()
+		{
+			if(kingisincheck())
+			{
+				callCheck(true);
+				if(checkmate())
+				{
+					callCheckMate(currentturn);
+				}
+			}else {
+				callCheck(false);
+			}
+		}
+		
+		//checks the board to see if the king is in check and update the trouble status
+		protected boolean kingisincheck()
+		{
+			if(kings[currentturn]!=null&&kings[currentturn].currentcell!=null) {
+				
+				if(kings[currentturn].currentcell.getAttackRisk(currentturn)>0)
+					kingsintrouble[currentturn]=true;
+				else kingsintrouble[currentturn]=false;
+			}
+			
+			return kingsintrouble[currentturn];
+			
+		}
+		
+		protected boolean checkmate() {
+			if(kingsintrouble[currentturn])
+			{
+				if(kingcantmove()&&kingcantblock())
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		protected boolean kingcantmove()
+		{
+			//TODO: stub
+			return true;
+		}
+		protected boolean kingcantblock()
+		{
+			if(kings[currentturn].currentcell.getAttackRisk(currentturn^1)>1 )
+			{
+				return true;
+			}
+			else
+			{//use lastpiece
+			//
+			
+			}
+			
+			//TODO: stub
+			
+				
+			return false;
+		}
+		
+		
 		
 		protected void endturn() {
 			for(int i=0;i<Actors.size();i++)
@@ -600,23 +678,27 @@ class GameFrame extends JFrame
 					Actors.remove(i);
 				}
 			update();
-			if(kings[currentturn^1]!=null&&kings[currentturn^1].currentcell!=null) {
-				
-				if(kings[currentturn^1].currentcell.getAttackRisk(currentturn^1)>0)
-					kingsintrouble[currentturn^1]=true;
-				
-				
-			}
+			
 			
 			currentturn=(currentturn+1)%2;
-			unselectpiece();
-			//selected_piece=null;
-			//selected_cell = null;
-			kingAtkRisk = kingPos[currentturn].getAttackRisk(currentturn);
-			if(kingPos[currentturn].getAttackRisk(currentturn) > 0)
-				kingIsInCheck = true; 
 			turnlabel.setText(players[currentturn]);
+			unselectpiece();
+			
+			
+			//now to check the current king
+			
+			
+			
+			
+			
+			//
+			//kingAtkRisk = kingPos[currentturn].getAttackRisk(currentturn);
+			//if(kingPos[currentturn].getAttackRisk(currentturn) > 0)
+			//	kingIsInCheck = true;
+			
 		}
+		
+		
 		
 		protected void update()
 		{
@@ -631,18 +713,7 @@ class GameFrame extends JFrame
 			
 			}
 		}
-		protected void checkforcheck() {
-			for(Actor A: Actors)
-			{
-				if(A.ID==1&&A.currentcell.attackrisk[((A.factionID+1)%2)]>0) {
-					CallCheck();
-					break;
-					
-				}
-			}
-			
-			
-		}
+		
 		
 		
 	/*-------------Rendering------------------*/
@@ -904,10 +975,10 @@ class GameFrame extends JFrame
 			kings[1]=new King(1);
 			addPiece(new Rook(0),0,0);
 			addPiece(new Rook(0),7,0);
-			//addPiece(new Knight(0),1,0);//white Knight1
-			//addPiece(new Knight(0),6,0);//white Knight2
-			//addPiece(new Bishop(0),2,0);//white Bishop1
-			//addPiece(new Bishop(0),5,0);//white Bishop2
+			addPiece(new Knight(0),1,0);//white Knight1
+			addPiece(new Knight(0),6,0);//white Knight2
+			addPiece(new Bishop(0),2,0);//white Bishop1
+			addPiece(new Bishop(0),5,0);//white Bishop2
 			addPiece(kings[0],4,0);//white King
 			kingPos[0] = kings[0].currentcell;
 			addPiece(new Queen(0),3,0);//white Queen
@@ -918,10 +989,10 @@ class GameFrame extends JFrame
 		
 			addPiece(new Rook(1),0,placementoffset+7);//black rook1
 			addPiece(new Rook(1),7,placementoffset+7);//black rook2
-			//addPiece(new Knight(1),1,placementoffset+7);;//black Knight1
-			//addPiece(new Knight(1),6,placementoffset+7);;//black Knight2
-			//addPiece(new Bishop(1),2,placementoffset+7);//black Bishop1
-			//addPiece(new Bishop(1),5,placementoffset+7);//black Bishop2
+			addPiece(new Knight(1),1,placementoffset+7);;//black Knight1
+			addPiece(new Knight(1),6,placementoffset+7);;//black Knight2
+			addPiece(new Bishop(1),2,placementoffset+7);//black Bishop1
+			addPiece(new Bishop(1),5,placementoffset+7);//black Bishop2
 			addPiece(kings[1],3,placementoffset+7);//black King
 			kingPos[1] = kings[1].currentcell;
 			//addPiece(new Queen(1),4,placementoffset+7);
