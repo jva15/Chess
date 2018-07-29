@@ -66,6 +66,17 @@ public abstract class Actor extends Sprite implements ActionListener{//extend bu
 	}
 	
 	
+	
+	public int GetY() {return yoffset;}
+	//set offset to the lower left corner of sprite
+	public void setatoffset(int ox, int oy) {
+		this.xoffset=ox;
+		this.yoffset=oy-(int)(ysize);
+		
+	}
+	
+	
+	
 	public void updatebycell()
 	{
 		if(Active&&set_to_a_cell)
@@ -114,7 +125,12 @@ public abstract class Actor extends Sprite implements ActionListener{//extend bu
 		set_to_a_cell=false;
 		
 	}
+	public void setoffset(int ox,int oy) {
+		
+		this.xoffset=ox;
+		this.yoffset=oy;
 	
+	}
 	
 	
 	public void Drawframe(Graphics2D g2d) {
@@ -126,16 +142,36 @@ public abstract class Actor extends Sprite implements ActionListener{//extend bu
 	}
 	public void moveTo(Node newcell) {
 		
-		
+		//setRange(false);
 		highlight(false);
 		unsetCell();
 		if (newcell.actor!=null)newcell.actor.kill();
 		setCell(newcell);
+		//setRange(true);
+		
+	}
+	
+	//tests whether move is valid
+	//public boolean testMove(Node newcell)
+	{
 		
 	}
 	
 	public abstract void setRange(boolean inrange); //uses the classmember factionId aswell
 
+		/*TODO: Impliment setRange for each of the subclasses of Actor
+		* similar to highlight but instead of highlighting
+		* it should call setAttackrisk(inrange,factionID) on the cell
+		* remember not to let the piece setRange on itself
+		* 
+		* this would be a good opportunity to practice with iterators to avoid repeating code for both 
+		* highlight and setRange
+		*/
+		
+		
+
+	
+	
 	
 	public abstract void highlight(boolean b);  //abstract method will be defined in subclasses
 	

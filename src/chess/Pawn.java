@@ -4,8 +4,7 @@ import java.awt.event.ActionEvent;
 
 public class Pawn extends Actor {
 	
-	private int direction;              //pawns cannot move backward
-	int ID=0;
+	private int direction;    //pawns cannot move backward
 	public boolean enPassantLeft = false, enPassantRight = false;
 	private int left, right;
 	
@@ -24,6 +23,7 @@ public class Pawn extends Actor {
 	}
 	
 	public void setupID(){
+		ID=0;
 		
 		if(factionID == 0)
 		{
@@ -73,8 +73,7 @@ public class Pawn extends Actor {
 				n.adgNodes[left].highlighted = b; 
 			if(firstMove)
 				if(!n.occupied && !n.adgNodes[direction].occupied)
-					{n.adgNodes[direction].highlighted = b;
-					}
+					n.adgNodes[direction].highlighted = b;
 		}	
 	}
 	

@@ -19,7 +19,7 @@ import org.omg.IOP.ExceptionDetailMessage;
 import javax.swing.*;
 
 public class Game
-{
+{ //
 	
 	public Actor Actors[];
 	static GameFrame gameframe;
