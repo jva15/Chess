@@ -502,12 +502,8 @@ class GameFrame extends JFrame
 		//important to note this is called AFTER selected_piece is moved to new cell
 		public void pawnCheck()
 		{
-			
 			if(selected_piece.ID == 0)                  //if piece is pawn
 			{ 
-				selected_piece.enPassantLeft = false;
-				selected_piece.enPassantRight = false; 
-				
 				int dir, rdir;                          //direction needed for checks(rdir = reverse direction)
 				if(currentturn == 0)
 				{	
@@ -524,15 +520,17 @@ class GameFrame extends JFrame
 				if(selected_piece.currentcell.adgNodes[dir] == null)
 					pawnPromotion(selected_piece);
 				//if pawn has captured the opponent's pawn through en passant
-				else if(enPassantCell != null && selected_piece.currentcell.adgNodes[rdir] == enPassantCell)
-					selected_piece.currentcell.adgNodes[rdir].actor.kill();
-				else if(selected_piece.firstMove)            //if this is pawn's first move
+				else if(enPassantCell != null && selected_piece.currentcell.adgNodes[rdir].occupied && selected_piece.currentcell.adgNodes[rdir] == enPassantCell)
+				{ 
+					selected_piece.enPassantLeft = selected_piece.enPassantRight = false;
+					selected_piece.currentcell.adgNodes[rdir].actor.kill(); 
+			    }
+				if(selected_piece.firstMove)            //if this is pawn's first move
 				{
 					selected_piece.firstMove = false; 
 					//if(piece was moved two spaces forward) 
 					if(selected_cell.adgNodes[dir].adgNodes[dir] == selected_piece.currentcell)
 					{
-						enPassantCell = selected_piece.currentcell;
 						if(selected_piece.currentcell.adgNodes[1] != null && 
 						   selected_piece.currentcell.adgNodes[1].occupied && 
 						   selected_piece.currentcell.adgNodes[1].actor.factionID != currentturn &&
