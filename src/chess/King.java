@@ -151,7 +151,7 @@ public class King extends Actor {
 					if(way.actor!=null&&way.actor.factionID==factionID) //no bumbling idiot to block the way
 					{
 						return false;
-						
+						//
 					}
 				}
 			}
