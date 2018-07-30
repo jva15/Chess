@@ -37,7 +37,7 @@ public class King extends Actor {
 	//needs to be aware that King cannot put itself in a capturable position -- this functionality not added yet
 	public void highlight(boolean b) {
 		Node n = currentcell; 
-		n.highlighted = true; 
+		n.highlighted = b; 
 		if(n.adgNodes[1] != null)
 			if(!n.adgNodes[1].occupied || n.adgNodes[1].actor.factionID != this.factionID)
 				if(n.adgNodes[1].getAttackRisk(factionID) == 0)
@@ -50,7 +50,7 @@ public class King extends Actor {
 		{
 			n = n.adgNodes[0];
 			if(!n.occupied || n.actor.factionID != this.factionID)
-				if(n.getAttackRisk(factionID ^ 1) == 0)
+				if(n.getAttackRisk(factionID) == 0)
 					n.highlighted = b; 
 			if(n.adgNodes[1] != null)
 				if(!n.adgNodes[1].occupied || n.adgNodes[1].actor.factionID != this.factionID)
@@ -61,6 +61,7 @@ public class King extends Actor {
 					if(n.adgNodes[3].getAttackRisk(factionID) == 0)
 						n.adgNodes[3].highlighted = b;
 		}
+		n = currentcell;
 		if(n.adgNodes[2] != null)
 		{
 			n = n.adgNodes[2];
@@ -84,25 +85,22 @@ public class King extends Actor {
 			while(n.adgNodes[1] != null)
 			{
 				n = n.adgNodes[1];
-				if(n.adgNodes[1] != null)
+				if(n.adgNodes[1] == null)
 				{
-					if(n.adgNodes[1].occupied && 
-							n.adgNodes[1].actor.firstMove && 
-							n.adgNodes[1].actor.ID == 4
-						&& n.adgNodes[1].getAttackRisk(factionID) == 0)
-						n.adgNodes[1].highlighted = b;
+					if(n.occupied && n.actor.firstMove && n.actor.ID == 5 && n.getAttackRisk(factionID) == 0)
+						n.highlighted = b;
 				}
 				else if(n.occupied || n.getAttackRisk(factionID) != 0)
 					break;
 			}
+			n = currentcell;
 			while(n.adgNodes[3] != null)
 			{
 				n = n.adgNodes[3];
 				if(n.adgNodes[3] == null)
 				{
-					if(n.adgNodes[3].occupied && n.adgNodes[3].actor.firstMove && n.adgNodes[3].actor.ID == 4 
-						&& n.adgNodes[3].getAttackRisk(factionID) == 0)
-						n.adgNodes[3].highlighted = b;
+					if(n.occupied && n.actor.firstMove && n.actor.ID == 5 && n.getAttackRisk(factionID) == 0)
+						n.highlighted = b;
 				}
 				else if(n.occupied || n.getAttackRisk(factionID) != 0)
 					break;
@@ -126,6 +124,7 @@ public class King extends Actor {
 			if(n.adgNodes[3] != null)
 				n.adgNodes[3].setAttackRisk(inrange, factionID);
 		}
+		n = currentcell;
 		if(n.adgNodes[2] != null)
 		{
 			n = n.adgNodes[2];

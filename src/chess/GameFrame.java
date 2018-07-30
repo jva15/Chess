@@ -44,10 +44,6 @@ class GameFrame extends JFrame
 	String players[]=new String[2];
 	public boolean inputenabled=false;
 	int currentturn =0;
-	
-	
-	
-	
 	JMenuBar menubar;
 	JMenu firstmenu;
 	JMenuItem newgame;
