@@ -240,16 +240,13 @@ class GameFrame extends JFrame
 		int kingAtkRisk;                //stores the current attack risk of the king's cell
 		boolean kingIsInCheck = false;
 		
-		
-		
-		int state;//not yet implimented
-				//0 nothing should be selectable
-				//1 no item selected, only the pieces can be selected
-				//2 item selected, only tiles can be selected
-		
 		private Node cellgrid[][];  //cell grid
 		private int dx = 0;		// reserved for player gridmovement
 		private int dy = 0;		// increment amount (y coord)
+		
+		boolean selfrotatemode;
+		int targetradius;
+		
 		
 		int Highlightvalue=255;
 		int dHighlightvalue=1;
@@ -291,6 +288,14 @@ class GameFrame extends JFrame
 		
 		public GridPanel() 
 		{
+			selected_piece = null;    
+			selected_cell = null; 
+			lastpiece=null;
+			enPassantCell = null;      //stores location of cell where a potential en passant can occur
+			currentturn=0;
+			
+			selfrotatemode=false;
+			
 			transy1=(int)((double)transy/(publicdata.getBaseSize())*publicdata.height);
 			transx1=(int)((double)transx/(publicdata.getBaseSize())*publicdata.width);
 			transx=transx1;
@@ -426,7 +431,7 @@ class GameFrame extends JFrame
 					    				}
 					    			}
 					    			
-					    			pawnCheck();                               //performs functions related only to the pawn
+					    			//pawnCheck();                               //performs functions related only to the pawn
 					    			endturn();
 					    			CheckKing();
 					    			
@@ -648,25 +653,20 @@ class GameFrame extends JFrame
 		
 		protected boolean kingcantmove()
 		{
-			//TODO: stub
-			return true;
+			
+			return kings[currentturn].isTrapped();
 		}
 		protected boolean kingcantblock()
 		{
-			if(kings[currentturn].currentcell.getAttackRisk(currentturn^1)>1 )
-			{
+			if(kings[currentturn].currentcell.getAttackRisk(currentturn)>1 )
+			{//if the king has more than 1 piece targeting him, its over.
+				System.out.println("victor by ultimate gank");
 				return true;
 			}
-			else
-			{//use lastpiece
-			//
-			
+			else { 
+				System.out.println("victor by no counter");
+				return kings[currentturn].cantcounter(lastpiece);
 			}
-			
-			//TODO: stub
-			
-				
-			return false;
 		}
 		
 		
@@ -684,18 +684,11 @@ class GameFrame extends JFrame
 			turnlabel.setText(players[currentturn]);
 			unselectpiece();
 			
+			kingAtkRisk = kingPos[currentturn].getAttackRisk(currentturn);
+			if(kingPos[currentturn].getAttackRisk(currentturn) > 0)
+				kingIsInCheck = true;
 			
-			//now to check the current king
-			
-			
-			
-			
-			
-			//
-			//kingAtkRisk = kingPos[currentturn].getAttackRisk(currentturn);
-			//if(kingPos[currentturn].getAttackRisk(currentturn) > 0)
-			//	kingIsInCheck = true;
-			
+			rotatebyturn();
 		}
 		
 		
@@ -726,6 +719,17 @@ class GameFrame extends JFrame
 			timer.restart();
 		}
 		
+		private void rotatebyturn()
+	    {
+	    
+		    
+		    if(currentturn==0) 	targetradius=315;
+		    else targetradius=135;
+		    inputenabled=false;
+		    selfrotatemode=true;
+		    radd=3;
+	    }
+		
 		// draws the stuff
 		public void paintComponent( Graphics g )
 		{
@@ -736,8 +740,24 @@ class GameFrame extends JFrame
 		   publicdata.height=getParent().getHeight();
 		   publicdata.width=getParent().getWidth();
 		   
-		   //x=y=getHeight()/2;
+		   int tr=(int) (targetradius-radd);
+		   
+		   if(selfrotatemode&& ((tr <= rad)&&(rad<=targetradius)))
+		   {
+			   radd=0;
+			   inputenabled=true;
+			   selfrotatemode=false;
+		   }
+		   
+		   
 		    dx=dy=0;
+		    
+		    
+		    
+		    
+		    
+		    
+		    
 		    
 		    //does the highlight glow effect
 			if(Highlightvalue>=255||Highlightvalue<=0) dHighlightvalue*=-1;
