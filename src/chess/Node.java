@@ -78,6 +78,28 @@ public class Node {
 		this();
 		setoffset(x,y);
 	}
+	
+	/*							  3
+	 * node adgacancy list is  0     2
+	 * 							  1
+	 * 
+	 * directions through this function are interpreted as
+	 * 		7 6 5
+	 * 		0   4
+	 * 		1 2 3
+	 */
+	
+	public Node nodeindirection(int dir)/*0-8*/
+	{
+		dir=dir%8;
+		Node newway;
+		newway=adgNodes[dir/2];
+		if(dir%2==0) return newway;
+		else if(newway!=null) {
+			newway=newway.adgNodes[((dir/2)+1)%4];
+		}
+		return newway;
+	}
 	public void setoffset(int x, int y)
 	{
 		xoffset=x;

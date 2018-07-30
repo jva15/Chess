@@ -172,6 +172,7 @@ class GameFrame extends JFrame
 		repaint();
 	}
 	
+		
 	public void LoadGrid()
 	{
 		GP=new GridPanel();
@@ -204,6 +205,7 @@ class GameFrame extends JFrame
 
 	class GridPanel extends JLayeredPane implements ActionListener
 	{
+		
 		//public Actor[] Actors;//list of actors
 		public LinkedList<Actor> Actors;
 		private int delay = 10;//delay for the FPS timer
@@ -234,16 +236,13 @@ class GameFrame extends JFrame
 		int kingAtkRisk;                //stores the current attack risk of the king's cell
 		boolean kingIsInCheck = false;
 		
-		
-		
-		int state;//not yet implimented
-				//0 nothing should be selectable
-				//1 no item selected, only the pieces can be selected
-				//2 item selected, only tiles can be selected
-		
 		private Node cellgrid[][];  //cell grid
 		private int dx = 0;		// reserved for player gridmovement
 		private int dy = 0;		// increment amount (y coord)
+		
+		boolean selfrotatemode;
+		int targetradius;
+		
 		
 		int Highlightvalue=255;
 		int dHighlightvalue=1;
@@ -285,6 +284,14 @@ class GameFrame extends JFrame
 		
 		public GridPanel() 
 		{
+			selected_piece = null;    
+			selected_cell = null; 
+			lastpiece=null;
+			enPassantCell = null;      //stores location of cell where a potential en passant can occur
+			currentturn=0;
+			
+			selfrotatemode=false;
+			
 			transy1=(int)((double)transy/(publicdata.getBaseSize())*publicdata.height);
 			transx1=(int)((double)transx/(publicdata.getBaseSize())*publicdata.width);
 			transx=transx1;
@@ -387,44 +394,46 @@ class GameFrame extends JFrame
 					    	}
 					    	
 					    	if(cell != null)  //if a cell/actor was clicked
-					    	{                                 
-					    		if(cell.highlighted && cell != selected_cell)                                 
-					    		{	
-					    			if(cell.occupied && cell.actor.ID == 5 && cell.actor.firstMove && selected_piece != null && selected_piece.ID == 1 
-							    	   && selected_piece.firstMove && selected_piece.factionID == cell.actor.factionID)
-						    				castling(cell); 
-					    			else
-					    			{
-					    				selected_piece = selected_cell.actor;
-					    			
-					    				//if(testMove(selected_piece, cell))
-					    				//{
-					    				//	displayMoveError();
-					    				//	return;
-					    				//}
-					    				selected_piece.moveTo(cell);           //move piece to cell
-					    				lastpiece=selected_piece;
-					   					//if(piece is king or rook, we need to keep track of whether it is first move or not)
-					   					//for castling purposes
-					   					if(selected_piece.ID == 4)
-				    						selected_piece.firstMove = false;
-				    					else if(selected_piece.ID== 1)
-				    					{
-				    						selected_piece.firstMove = false;
-				    						kingPos[currentturn] = selected_piece.currentcell;
-					    				}
-					    			}
-					    			pawnCheck();                               //performs functions related only to the pawn
-					    			endturn();
-					    			CheckKing();
-					    		}
-					    		else if(cell.occupied && cell.actor.factionID == currentturn)  //if player selected their own piece
+					    	{
+					    		if(cell.occupied && cell.actor.factionID == currentturn)  //if player selected their own piece
 					    		{
 					    			if(selected_piece!=null&&selected_piece.factionID == currentturn )
 					    				unselectpiece();
 					    			if(selected_piece!=cell.actor)
 					    				select(cell.actor);    
-					    		} 
+					    		}                                     //will run highlight function for actor on cell
+					    		else if(cell.highlighted)                                 //else if player chose cell to move to 
+					    		{	
+					    			selected_piece = selected_cell.actor; 
+					    			if(cell.occupied && cell.actor.ID == 4 && selected_piece.ID == 1 && selected_piece.factionID == cell.actor.factionID)
+					    				castling(cell);
+					    			else
+					    			{
+					    				if(testMove(selected_piece, cell))
+					    				{
+					    					displayMoveError();
+					    					return;
+					    				}
+					    				selected_piece.moveTo(cell);           //move piece to cell
+					    				lastpiece=selected_piece;
+					    				//if(piece is king or rook, we need to keep track of whether it is first move or not)
+					    				//for castling purposes
+					    				if(selected_piece.ID == 4)
+					    					selected_piece.firstMove = false;
+					    				else if(selected_piece.ID== 1)
+					    				{
+					    					selected_piece.firstMove = false;
+					    					kingPos[currentturn] = selected_piece.currentcell;
+					    				}
+					    			}
+					    			
+					    			//pawnCheck();                               //performs functions related only to the pawn
+					    			endturn();
+					    			CheckKing();
+					    			
+					    			
+					    			
+					    		}
 					    	}
 					    	inputenabled=true;
 				    	}
@@ -480,20 +489,31 @@ class GameFrame extends JFrame
 		
 		public void castling(Node c)
 		{
-			selected_cell.actor.highlight(false);
 			c.actor.firstMove = false;
-			selected_cell.actor.firstMove = false;
+			selected_piece.firstMove = false;
+			
+			int left, right;
+			if(currentturn == 0)
+			{
+				left = 1;
+				right = 3;
+			}
+			else
+			{
+				left = 3;
+				right = 1;
+			}
 			
 			//kingside castling
-			if(selected_cell.adgNodes[1].adgNodes[1].adgNodes[1] == c)
+			if(selected_cell.adgNodes[right].adgNodes[right].adgNodes[right] == c)
 			{
-				selected_cell.actor.moveTo(selected_cell.adgNodes[1].adgNodes[1]);
-				c.actor.moveTo(c.adgNodes[3].adgNodes[3]);
+				selected_piece.moveTo(selected_cell.adgNodes[right].adgNodes[right]);
+				c.actor.moveTo(c.adgNodes[left].adgNodes[left]);
 			}
 			else  //queenside castling
 			{
-				selected_piece.moveTo(selected_cell.adgNodes[3].adgNodes[3]);
-				c.actor.moveTo(c.adgNodes[1].adgNodes[1].adgNodes[1]);
+				selected_piece.moveTo(selected_cell.adgNodes[left].adgNodes[left]);
+				c.actor.moveTo(c.adgNodes[right].adgNodes[right].adgNodes[right]);
 			}
 			kingPos[currentturn] = selected_piece.currentcell;   //update position of king
 		}
@@ -627,25 +647,20 @@ class GameFrame extends JFrame
 		
 		protected boolean kingcantmove()
 		{
-			//TODO: stub
-			return true;
+			
+			return kings[currentturn].isTrapped();
 		}
 		protected boolean kingcantblock()
 		{
-			if(kings[currentturn].currentcell.getAttackRisk(currentturn^1)>1 )
-			{
+			if(kings[currentturn].currentcell.getAttackRisk(currentturn)>1 )
+			{//if the king has more than 1 piece targeting him, its over.
+				System.out.println("victor by ultimate gank");
 				return true;
 			}
-			else
-			{//use lastpiece
-			//
-			
+			else { 
+				System.out.println("victor by no counter");
+				return kings[currentturn].cantcounter(lastpiece);
 			}
-			
-			//TODO: stub
-			
-				
-			return false;
 		}
 		
 		
@@ -663,18 +678,11 @@ class GameFrame extends JFrame
 			turnlabel.setText(players[currentturn]);
 			unselectpiece();
 			
+			kingAtkRisk = kingPos[currentturn].getAttackRisk(currentturn);
+			if(kingPos[currentturn].getAttackRisk(currentturn) > 0)
+				kingIsInCheck = true;
 			
-			//now to check the current king
-			
-			
-			
-			
-			
-			//
-			//kingAtkRisk = kingPos[currentturn].getAttackRisk(currentturn);
-			//if(kingPos[currentturn].getAttackRisk(currentturn) > 0)
-			//	kingIsInCheck = true;
-			
+			rotatebyturn();
 		}
 		
 		
@@ -705,6 +713,17 @@ class GameFrame extends JFrame
 			timer.restart();
 		}
 		
+		private void rotatebyturn()
+	    {
+	    
+		    
+		    if(currentturn==0) 	targetradius=315;
+		    else targetradius=135;
+		    inputenabled=false;
+		    selfrotatemode=true;
+		    radd=3;
+	    }
+		
 		// draws the stuff
 		public void paintComponent( Graphics g )
 		{
@@ -715,8 +734,24 @@ class GameFrame extends JFrame
 		   publicdata.height=getParent().getHeight();
 		   publicdata.width=getParent().getWidth();
 		   
-		   //x=y=getHeight()/2;
+		   int tr=(int) (targetradius-radd);
+		   
+		   if(selfrotatemode&& ((tr <= rad)&&(rad<=targetradius)))
+		   {
+			   radd=0;
+			   inputenabled=true;
+			   selfrotatemode=false;
+		   }
+		   
+		   
 		    dx=dy=0;
+		    
+		    
+		    
+		    
+		    
+		    
+		    
 		    
 		    //does the highlight glow effect
 			if(Highlightvalue>=255||Highlightvalue<=0) dHighlightvalue*=-1;
@@ -972,9 +1007,9 @@ class GameFrame extends JFrame
 			addPiece(new Knight(1),6,placementoffset+7);;//black Knight2
 			addPiece(new Bishop(1),2,placementoffset+7);//black Bishop1
 			addPiece(new Bishop(1),5,placementoffset+7);//black Bishop2
-			addPiece(kings[1],4,placementoffset+7);//black King
+			addPiece(kings[1],3,placementoffset+7);//black King
 			kingPos[1] = kings[1].currentcell;
-			addPiece(new Queen(1),3,placementoffset+7);
+			//addPiece(new Queen(1),4,placementoffset+7);
 
 			if(WarMode)
 			{

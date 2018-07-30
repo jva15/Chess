@@ -4,6 +4,9 @@ import java.awt.event.ActionEvent;
 
 public class King extends Actor {
 	
+	
+	private int directionofthreat=-1; 
+	
 	public King() {
 		super();
 		setupID();
@@ -24,6 +27,11 @@ public class King extends Actor {
 		I_index_y=factionID;
 		I_index_x=1;
 	}
+	
+	public void setthreat(int incomingdir ) {
+		if(incomingdir!=-1)directionofthreat=((incomingdir+4)%8);
+		else directionofthreat=-1;
+		}
 	
 	
 	//needs to be aware that King cannot put itself in a capturable position -- this functionality not added yet
@@ -127,5 +135,58 @@ public class King extends Actor {
 				n.adgNodes[3].setAttackRisk(inrange, factionID);
 		}
 	}
+	public boolean isTrapped()
+	{
+		Node way;
+		for(int i=0;i<8;i++)
+		{
+			way=this.currentcell.nodeindirection(i);
+			if(way!=null)//its not an edge?	 
+			{
+				if(way.getAttackRisk(factionID)==0) //no one can attack me there
+				{
+					if(way.actor==null) return false;
+					
+					if(way.actor!=null&&way.actor.factionID==factionID) //no bumbling idiot to block the way
+					{
+						return false;
+						//
+					}
+				}
+			}
+		}
+		return true;
+
+	}
+	public boolean cantcounter(Actor Piece)
+	{
+		
+		
+		Node cell;
+		if(directionofthreat==-1) return false;//if the king isn't in check, return false
+		boolean not_adjacent=false;
+		do{	
+			cell=currentcell.nodeindirection(directionofthreat); //get a cell in said directio
+			if(cell!=null&&cell.getAttackRisk(factionID^1)>0)
+			{	
+				if(not_adjacent||(cell.getAttackRisk(factionID^1)>1))				
+					return true; //if in that cell, theres an ally 
+			}
+			not_adjacent=true;
+		}while(cell!=null||cell.occupied!=true);
+			
+		
+		
+		
+		return false;
+		
+		
+	}
+	
+	
+	
+	
+	
+	
 }
 

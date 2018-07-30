@@ -240,37 +240,28 @@ public abstract class Actor extends Sprite implements ActionListener{//extend bu
 	protected void lineAttack(boolean inrange)
 	{
 		Node n = currentcell; 
-		while(n.adgNodes[0] != null)
+		King a;
+		for(int i=0;i<4;i++)
 		{
-			n = n.adgNodes[0];                     //advance to next cell
-			n.setAttackRisk(inrange, factionID);   //update attack risk of cell
-			if(n.occupied)                         //if node is occupied, break
-				break;
+			n = currentcell;
+			while(n.adgNodes[0] != null)
+			{
+				n = n.adgNodes[0];                     //advance to next cell
+				n.setAttackRisk(inrange, factionID);   //update attack risk of cell
+				if(n.occupied)                         //if node is occupied, check for a king and break
+				{
+					if(n.actor.ID==1&&n.actor.factionID!=factionID)//if the piece is an enemy king
+					{
+						a=(King) n.actor;
+						if(inrange)a.setthreat((i*2)%8);
+						else a.setthreat(-1);
+						
+					}
+					break;
+				}
+			}
 		}
-		n = currentcell; 
-		while(n.adgNodes[1] != null)
-		{
-			n = n.adgNodes[1];                     //advance to next cell
-			n.setAttackRisk(inrange, factionID);   //update attack risk of cell
-			if(n.occupied)                         //if node is occupied, break
-				break;
-		}
-		n = currentcell;
-		while(n.adgNodes[2] != null)
-		{
-			n = n.adgNodes[2];                     //advance to next cell
-			n.setAttackRisk(inrange, factionID);   //update attack risk of cell
-			if(n.occupied)                         //if node is occupied, break
-				break;
-		}
-		n = currentcell;
-		while(n.adgNodes[3] != null)
-		{
-			n = n.adgNodes[3];                     //advance to next cell
-			n.setAttackRisk(inrange, factionID);   //update attack risk of cell
-			if(n.occupied)                         //if node is occupied, break
-				break;
-		}
+		
 	}
 	
 	//function highlights or unhighlights cells diagonally in all directions, starting at currentcell
@@ -335,38 +326,30 @@ public abstract class Actor extends Sprite implements ActionListener{//extend bu
 	//sets attack risk for cells in diagonal range from piece:
 	protected void diagAttack(boolean inrange)
 	{
-		Node n = currentcell; 
-		while(n.adgNodes[1] != null && n.adgNodes[1].adgNodes[0] != null)
+		Node n; 
+		King a;
+				
+		for(int i=0;i<4;i++)
 		{
-			n = n.adgNodes[1].adgNodes[0];
-			n.setAttackRisk(inrange, factionID);
-			if(n.occupied)
-				break;
+			n = currentcell; 
+			while(n.adgNodes[i] != null && n.adgNodes[i].adgNodes[(i+1)%4] != null)
+			{
+				n = n.adgNodes[i].adgNodes[(i+1)%4];
+				n.setAttackRisk(inrange, factionID);
+				if(n.occupied)
+				{
+					if(n.actor.ID==1&&n.actor.factionID!=factionID)//if the piece is an enemy king
+					{
+						a=(King) n.actor;
+						if(inrange)a.setthreat(((i*2)+1)%8);
+						else a.setthreat(-1);
+					}
+					break;
+				}
+				
+			}
 		}
-		n = currentcell; 
-		while(n.adgNodes[1] != null && n.adgNodes[1].adgNodes[2] != null)
-		{
-			n = n.adgNodes[1].adgNodes[2];
-			n.setAttackRisk(inrange, factionID);
-			if(n.occupied)
-				break;
-		}	
-		n = currentcell; 
-		while(n.adgNodes[3] != null && n.adgNodes[3].adgNodes[0] != null)
-		{
-			n = n.adgNodes[3].adgNodes[0];
-			n.setAttackRisk(inrange, factionID);
-			if(n.occupied)
-				break;
-		}
-		n = currentcell; 
-		while(n.adgNodes[3] != null && n.adgNodes[3].adgNodes[2] != null)
-		{
-			n = n.adgNodes[3].adgNodes[2];
-			n.setAttackRisk(inrange, factionID);
-			if(n.occupied)
-				break;
-		}
+		
 	}
 	
 	@Override
