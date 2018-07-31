@@ -1,5 +1,7 @@
 package src.chess;
 
+
+import java.util.Random;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
@@ -30,6 +32,7 @@ import src.chess.GameFrame.GridPanel;
 
 class GameFrame extends JFrame
 {
+	Random random;
 	GridPanel GP;
 	public LinkedList<Actor> Actors;
 	StartScreen Startscreen;
@@ -68,6 +71,7 @@ class GameFrame extends JFrame
 	{
 		super("Chess");
 		super.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		random=new Random();
 		players[0]="Player 1's turn";
 		players[1]="Player 2's turn";
 		turnlabel=new JLabel(players[0]);
@@ -116,9 +120,7 @@ class GameFrame extends JFrame
 				
 				
 				getContentPane().removeAll();
-				GP=new GridPanel();
-				WarMode=false;
-				getContentPane().add(GP);
+				LoadGrid(false);
 			}
 		});
 		
@@ -130,9 +132,7 @@ class GameFrame extends JFrame
 				
 				
 				getContentPane().removeAll();
-				GP=new GridPanel();
-				WarMode=true;
-				getContentPane().add(GP);
+				LoadGrid(true);
 			}
 		});
 		
@@ -174,9 +174,9 @@ class GameFrame extends JFrame
 	}
 	
 		
-	public void LoadGrid()
+	public void LoadGrid(boolean THIS_IS_WAAAAR)
 	{
-		GP=new GridPanel();
+		GP=new GridPanel(THIS_IS_WAAAAR);
 		add(GP);
 		repaint();
 	}
@@ -208,6 +208,8 @@ class GameFrame extends JFrame
 
 	class GridPanel extends JLayeredPane implements ActionListener
 	{
+		
+
 		private int delay = 10;//delay for the FPS timer
 		protected Timer timer; //FPS timer
 		private int x =0;//base offset	don't touch
@@ -218,7 +220,7 @@ class GameFrame extends JFrame
 		public double gridratio=1; // not ready yet
 		private int cellsize = (int)(150*gridratio);	// cell size on screen
 		private int cellspace= 0;//15; // space between the cells
-		private double rad = 0; // current view angle
+		private double rad = 315; // current view angle
 		private double radd = 0.0; // change in view angle
 		private int gsize=8;//number of cells(this is then squared)
 	
@@ -254,8 +256,8 @@ class GameFrame extends JFrame
 		{
 			this();
 			
-			if(crazymode)
-				gsize*=2;
+			if(crazymode)WarMode=crazymode;
+				
 				//TODO: add additional actors
 			init();	
 		}
@@ -264,26 +266,17 @@ class GameFrame extends JFrame
 		public void init() {
 			if(WarMode)
 			{
-				gsize*=2;
+				
 				placementoffset=gsize;
+				gsize=8*2;
 			}
-			setSize(publicdata.width, publicdata.height);
+			else
+			{
+				gsize=8;
+				placementoffset=0;
+				
+			}
 			
-			timer = new Timer(delay, this);//refresh timer
-			cellgrid=Init_NodeAr(cellgrid,gsize);   
-			timer.setCoalesce(true);
-			timer.start();		// start the timer
-			Actors=new LinkedList<Actor>();
-			Populate_board();	 
-			update();
-			add(turnlabel);
-			inputenabled=true;
-		}
-		
-		
-		
-		public GridPanel() 
-		{
 			selected_piece = null;    
 			selected_cell = null; 
 			lastpiece=null;
@@ -305,6 +298,25 @@ class GameFrame extends JFrame
 			focalpointx=x+(int)(((centerpoint[0]-x)*2-(cellsize))/2);//used to store the center point of actors to be rotated
 			focalpointy=y+(int)(((centerpoint[1]-y)*2-(cellsize))/2);//
 			
+			
+			setSize(publicdata.width, publicdata.height);
+			
+			timer = new Timer(delay, this);//refresh timer
+			cellgrid=Init_NodeAr(cellgrid,gsize);   
+			timer.setCoalesce(true);
+			timer.start();		// start the timer
+			Actors=new LinkedList<Actor>();
+			Populate_board();	 
+			update();
+			setLayer(turnlabel,300);
+			add(turnlabel);
+			inputenabled=true;
+		}
+		
+		
+		
+		public GridPanel() 
+		{
 			
 			
 			
@@ -367,7 +379,7 @@ class GameFrame extends JFrame
 				    	
 				    	if(inputenabled)
 				    	{
-				    		inputenabled = false;
+					     	inputenabled=false;
 					    	mousepointer[0]=e.getX();
 					    	mousepointer[1]=(e.getY());//the calculation is grid based, so i morph the y so it simulates a reverted version of the grid(before the y shrink)
 					    	System.out.println(e.getX()+"  "+e.getY());
@@ -435,11 +447,11 @@ class GameFrame extends JFrame
 					    			
 					    		}
 					    	}
-					    	inputenabled = true;
+					    	inputenabled=true;
 				    	}
 				    	}	
 				    }
-				   
+				    
 				});
 			   init();
 		   
@@ -760,15 +772,16 @@ class GameFrame extends JFrame
 			int rdx=1,rdy=1;
 			int rstx=0,rsty=0;
 			boolean ended=true;
+			double temprad=(rad+180)%360;
 	//TODO: FIX HERE
-			if (rad<90)					{rsty=gsize-1;rstx=gsize-1;
-				if(rad<=45) 					{rdx=1;rdy=-1;}else{rdx=-1;rdy=1;}}
-			else if (rad>=90&&rad<180)	{rsty=gsize-1;rstx=0;
-				if(rad<=90+45) 				{rdx=1;rdy=1;}else{rdx=-1;rdy=-1;}}
-			else if (rad>=180&&rad<270)	{rsty=0;rstx=0;
-				if(rad<=180+45) 				{rdx=-1;rdy=1;}else{rdx=1;rdy=-1;}}
+			if (temprad<90)					{rsty=gsize-1;rstx=gsize-1;
+				if(temprad<=45) 					{rdx=1;rdy=-1;}else{rdx=-1;rdy=1;}}
+			else if (temprad>=90&&temprad<180)	{rsty=gsize-1;rstx=0;
+				if(temprad<=90+45+180) 				{rdx=1;rdy=1;}else{rdx=-1;rdy=-1;}}
+			else if (temprad>=180&&temprad<270)	{rsty=0;rstx=0;
+				if(temprad<=180+45) 				{rdx=-1;rdy=1;}else{rdx=1;rdy=-1;}}
 			else						{rsty=0;rstx=gsize-1;
-				if(rad<=270+45)				{rdx=-1;rdy=-1;}else{rdx=1;rdy=1;}}
+				if(temprad<=270+45)				{rdx=-1;rdy=-1;}else{rdx=1;rdy=1;}}
 			
 			int stx=rstx;
 			int sty=rsty;
@@ -811,7 +824,7 @@ class GameFrame extends JFrame
 				else {overload=false;}
 				if(overload)
 				{
-					if(rad<180) {
+					if(temprad<=180) {
 						if(rdx==1&&rdy==-1||rdx==-1&&rdy==-1)
 						{
 							i= rstx;
@@ -982,8 +995,8 @@ class GameFrame extends JFrame
 		
 		private void Populate_board() {
 			//order placed affects 		
-			for(int i =0;i<8;i++) addPiece(new Pawn(0),i,1);//white pawns
-			for(int i =0;i<8;i++) addPiece(new Pawn(1),i,6);//black pawns
+			for(int i =0;i<(8+placementoffset);i++) addPiece(new Pawn(0),i,1);//white pawns
+			for(int i =0;i<(8+placementoffset);i++) addPiece(new Pawn(1),i,placementoffset+6);//black pawns
 			 addPiece(new Pawn(0),0,5);
 			kings[0]=new King(0);
 			kings[1]=new King(1);
@@ -1007,9 +1020,9 @@ class GameFrame extends JFrame
 			addPiece(new Knight(1),6,placementoffset+7);;//black Knight2
 			addPiece(new Bishop(1),2,placementoffset+7);//black Bishop1
 			addPiece(new Bishop(1),5,placementoffset+7);//black Bishop2
-			addPiece(kings[1],3,placementoffset+7);//black King
+			addPiece(kings[1],4,placementoffset+7);//black King
 			kingPos[1] = kings[1].currentcell;
-			addPiece(new Queen(1),4,placementoffset+7);
+			addPiece(new Queen(1),3,placementoffset+7);
 
 			if(WarMode)
 			{
