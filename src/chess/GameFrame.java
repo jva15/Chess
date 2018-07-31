@@ -37,6 +37,7 @@ class GameFrame extends JFrame
 	private GridPanel GP;
 	private StartScreen Startscreen;
 	protected int initialxclick;
+	public LinkedList<Actor> Actors;
 	
 	protected boolean kingsintrouble[] = new boolean[2];
 	protected boolean thekingisdead[]=new boolean[2];
@@ -193,7 +194,9 @@ class GameFrame extends JFrame
 	
 	public void pawnPromotion(Actor propawn)
 	{
-		PawnProDialog ppd = new PawnProDialog(this, propawn);
+		PawnProDialog ppd = new PawnProDialog(this, propawn, Actors,GP);
+		ppd.setVisible(true);
+		ppd.setSize(100, 300);	
 	}
 	
 	public void displayMoveError()
@@ -302,9 +305,7 @@ class GameFrame extends JFrame
 			cellgrid=Init_NodeAr(cellgrid,gsize);   
 			timer.setCoalesce(true);
 			timer.start();		// start the timer
-			
-			
-			Actors=new LinkedList<Actor>();//we store our actors here
+			Actors=new LinkedList<Actor>();
 			Populate_board();	 
 			update();
 			setLayer(turnlabel,300);
