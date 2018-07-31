@@ -31,6 +31,7 @@ import src.chess.GameFrame.GridPanel;
 class GameFrame extends JFrame
 {
 	GridPanel GP;
+	public LinkedList<Actor> Actors;
 	StartScreen Startscreen;
 	JPanel Mainmenu;
 	int initialxclick;
@@ -194,7 +195,9 @@ class GameFrame extends JFrame
 	
 	public void pawnPromotion(Actor propawn)
 	{
-		PawnProDialog ppd = new PawnProDialog(this, propawn);
+		PawnProDialog ppd = new PawnProDialog(this, propawn, Actors,GP);
+		ppd.setVisible(true);
+		ppd.setSize(100, 300);	
 	}
 	
 	public void displayMoveError()
@@ -205,9 +208,6 @@ class GameFrame extends JFrame
 
 	class GridPanel extends JLayeredPane implements ActionListener
 	{
-		
-		//public Actor[] Actors;//list of actors
-		public LinkedList<Actor> Actors;
 		private int delay = 10;//delay for the FPS timer
 		protected Timer timer; //FPS timer
 		private int x =0;//base offset	don't touch
@@ -367,7 +367,7 @@ class GameFrame extends JFrame
 				    	
 				    	if(inputenabled)
 				    	{
-					     	inputenabled=false;
+				    		inputenabled = false;
 					    	mousepointer[0]=e.getX();
 					    	mousepointer[1]=(e.getY());//the calculation is grid based, so i morph the y so it simulates a reverted version of the grid(before the y shrink)
 					    	System.out.println(e.getX()+"  "+e.getY());
@@ -427,7 +427,7 @@ class GameFrame extends JFrame
 					    				}
 					    			}
 					    			
-					    			//pawnCheck();                               //performs functions related only to the pawn
+					    			pawnCheck();                               //performs functions related only to the pawn
 					    			endturn();
 					    			CheckKing();
 					    			
@@ -435,11 +435,11 @@ class GameFrame extends JFrame
 					    			
 					    		}
 					    	}
-					    	inputenabled=true;
+					    	inputenabled = true;
 				    	}
 				    	}	
 				    }
-				    
+				   
 				});
 			   init();
 		   
@@ -984,7 +984,7 @@ class GameFrame extends JFrame
 			//order placed affects 		
 			for(int i =0;i<8;i++) addPiece(new Pawn(0),i,1);//white pawns
 			for(int i =0;i<8;i++) addPiece(new Pawn(1),i,6);//black pawns
-			
+			 addPiece(new Pawn(0),0,5);
 			kings[0]=new King(0);
 			kings[1]=new King(1);
 			addPiece(new Rook(0),0,0);
@@ -1009,7 +1009,7 @@ class GameFrame extends JFrame
 			addPiece(new Bishop(1),5,placementoffset+7);//black Bishop2
 			addPiece(kings[1],3,placementoffset+7);//black King
 			kingPos[1] = kings[1].currentcell;
-			//addPiece(new Queen(1),4,placementoffset+7);
+			addPiece(new Queen(1),4,placementoffset+7);
 
 			if(WarMode)
 			{

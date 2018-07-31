@@ -5,7 +5,11 @@ import java.awt.Frame;
 import java.awt.GridLayout; 
 import javax.swing.JButton; 
 import javax.swing.JLabel;
+
+import src.chess.GameFrame.GridPanel;
+
 import java.awt.event.ActionEvent;
+import java.util.LinkedList; 
 
 public class PawnProDialog extends JDialog
 {
@@ -15,12 +19,16 @@ public class PawnProDialog extends JDialog
 	JButton bishop = new JButton("Bishop");
 	JButton queen = new JButton("Queen");
 	
-	Actor ptp; //pawn to promote
+	private Actor ptp; //pawn to promote
+	private LinkedList<Actor> pieces;
+	private GridPanel gridcopy;
 	
-	public PawnProDialog(GameFrame owner, Actor piece)
+	public PawnProDialog(GameFrame owner, Actor piece, LinkedList<Actor> pieces,GridPanel GP)
 	{
 		super(owner, "Pawn Promotion");
+		gridcopy=GP;
 		ptp = piece; 
+		this.pieces = pieces;
 		setLayout(new GridLayout(5,1));
 		add(new JLabel("Promote pawn to: "));
 		buttonSetup();
@@ -52,10 +60,18 @@ public class PawnProDialog extends JDialog
 	//still needs some work, I'm not sure how to add pieces to board
 	private void replacePawn(Actor newPiece)
 	{
-		Node n = ptp.currentcell;
-		ptp.kill();
+		Node n= ptp.currentcell;
+		ptp.unsetCell();
 		newPiece.setCell(n);
-		//probably needs to add some stuff here
-		this.dispose(); //I believe this will close the dialog box
+		newPiece.Active=true;
+		pieces.add(newPiece);
+		
+		
+		
+		pieces.remove(ptp);
+		gridcopy.remove(ptp);
+		gridcopy.add(newPiece);
+		
+		this.dispose();
 	}
 }

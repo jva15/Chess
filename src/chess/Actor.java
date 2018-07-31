@@ -244,9 +244,9 @@ public abstract class Actor extends Sprite implements ActionListener{//extend bu
 		for(int i=0;i<4;i++)
 		{
 			n = currentcell;
-			while(n.adgNodes[0] != null)
+			while(n.adgNodes[i] != null)
 			{
-				n = n.adgNodes[0];                     //advance to next cell
+				n = n.adgNodes[i];                     //advance to next cell
 				n.setAttackRisk(inrange, factionID);   //update attack risk of cell
 				if(n.occupied)                         //if node is occupied, check for a king and break
 				{
