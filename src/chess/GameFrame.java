@@ -1,3 +1,4 @@
+/*all code by Joseph Auguste and Matthew Klopfenstein*/
 package src.chess;
 
 
@@ -32,27 +33,24 @@ import src.chess.GameFrame.GridPanel;
 
 class GameFrame extends JFrame
 {
-	Random random;
-	GridPanel GP;
-	StartScreen Startscreen;
-	JPanel Mainmenu;
-	int initialxclick;
-	//plarestuff
-	boolean kingsintrouble[] = new boolean[2];
-	boolean thekingisdead[]=new boolean[2];
-	boolean WarMode=false;
-	int placementoffset=0;
-	King kings[]=new King[2];
-	static int gaurdchannels=0;
-	String players[]=new String[2];
-	public boolean inputenabled=false;
+	protected Random random;
+	private GridPanel GP;
+	private StartScreen Startscreen;
+	protected int initialxclick;
+	
+	protected boolean kingsintrouble[] = new boolean[2];
+	protected boolean thekingisdead[]=new boolean[2];
+	protected int placementoffset=0;
+	protected King kings[]=new King[2];
+	protected String players[]=new String[2];
+	protected boolean inputenabled=false;
 	int currentturn =0;
-	JMenuBar menubar;
-	JMenu firstmenu;
-	JMenuItem newgame;
-	JMenuItem Warmode;
-	JLabel turnlabel;
-	Timer timer=new Timer(10,new ActionListener() {
+	private JMenuBar menubar;
+	private JMenu firstmenu;
+	private JMenuItem newgame;
+	private JMenuItem Warmode;
+	private JLabel turnlabel;
+	protected Timer timer=new Timer(10,new ActionListener() {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -73,6 +71,7 @@ class GameFrame extends JFrame
 		random=new Random();
 		players[0]="Player 1's turn";
 		players[1]="Player 2's turn";
+		
 		turnlabel=new JLabel(players[0]);
 		turnlabel.setVerticalTextPosition(JLabel.BOTTOM);
 		turnlabel.setHorizontalAlignment(JLabel.LEFT);
@@ -80,7 +79,7 @@ class GameFrame extends JFrame
 		turnlabel.setSize(300, 300);
 		
 		
-		//setExtendedState(JFrame.MAXIMIZED_BOTH); 
+		setExtendedState(JFrame.MAXIMIZED_BOTH); 
 		
 		for(int i=0;i<2;i++)
 		{
@@ -157,7 +156,7 @@ class GameFrame extends JFrame
 			}
 		});
 		
-		setSize(publicdata.width,publicdata.height);
+		setSize(publicdata.getW(),publicdata.getH());
 		
 		LoadStartScreen();
 		setVisible(true);
@@ -206,7 +205,8 @@ class GameFrame extends JFrame
 	class GridPanel extends JLayeredPane implements ActionListener
 	{
 		
-		//public Actor[] Actors;//list of actors
+		boolean WarMode=false;
+		
 		public LinkedList<Actor> Actors;
 		private int delay = 10;//delay for the FPS timer
 		protected Timer timer; //FPS timer
@@ -250,13 +250,10 @@ class GameFrame extends JFrame
 		
 		
 		
-		public GridPanel(boolean crazymode)
+		public GridPanel(boolean mode)
 		{
 			this();
-			
-			if(crazymode)WarMode=crazymode;
-				
-				//TODO: add additional actors
+			WarMode=mode;	
 			init();	
 		}
 		
@@ -265,8 +262,9 @@ class GameFrame extends JFrame
 			if(WarMode)
 			{
 				
-				placementoffset=gsize;
-				gsize=8*2;
+				placementoffset=8;
+				gsize=16;
+				
 			}
 			else
 			{
@@ -287,12 +285,13 @@ class GameFrame extends JFrame
 			transx1=(int)((double)transx/(publicdata.getBaseSize())*publicdata.width);
 			transx=transx1;
 			transy=transy1;
+			cellsize=(int)((double)cellsize/(publicdata.getBaseSize())*publicdata.getW());
 			
-			cellsize=(int)((double)cellsize/(publicdata.getBaseSize())*publicdata.width);
-			
-			//restag
+			//this is "Pivotal" for rotation 
+			//centerpoint is used for cell based rotation
 			centerpoint[0]=x+((cellsize+cellspace)*gsize)/2-cellspace;//
 			centerpoint[1]=y+((cellsize+cellspace)*gsize)/2-cellspace;//
+			//focalpoint is used for sprite based rotation
 			focalpointx=x+(int)(((centerpoint[0]-x)*2-(cellsize))/2);//used to store the center point of actors to be rotated
 			focalpointy=y+(int)(((centerpoint[1]-y)*2-(cellsize))/2);//
 			
@@ -303,7 +302,9 @@ class GameFrame extends JFrame
 			cellgrid=Init_NodeAr(cellgrid,gsize);   
 			timer.setCoalesce(true);
 			timer.start();		// start the timer
-			Actors=new LinkedList<Actor>();
+			
+			
+			Actors=new LinkedList<Actor>();//we store our actors here
 			Populate_board();	 
 			update();
 			setLayer(turnlabel,300);
@@ -315,32 +316,20 @@ class GameFrame extends JFrame
 		
 		public GridPanel() 
 		{
-			
-			
-			
-			
 			addMouseMotionListener(new MouseMotionListener() {
 				
 				@Override
 				public void mouseMoved(MouseEvent e) {
-					// TODO Auto-generated method stub
-					
+					//ignore this
 				}
 				
 				@Override
 				public void mouseDragged(MouseEvent e) {
-					// TODO Auto-generated method stub
-					
+					//rotate based on mouse distance from initial click.
 					if((e.getModifiers()&InputEvent.BUTTON3_MASK)==InputEvent.BUTTON3_MASK)
 					{
 						double rd=((double)(e.getXOnScreen()-initialxclick))/500;
-						System.out.println(e.getXOnScreen());
-						System.out.println(initialxclick);
 						radd=rd;
-								//Math.abs(rd) < 1 ? rd : (rd/Math.abs(rd))*1;
-						
-						
-						
 					}
 				}
 			});
@@ -349,14 +338,12 @@ class GameFrame extends JFrame
 			addMouseListener(new MouseAdapter() {
 			    @Override
 			    public void mouseReleased(MouseEvent e) {
-			    	// TODO Auto-generated method stub
 			    	super.mouseReleased(e);
 			    	radd=0;
 			    }
 				
 			    @Override
 			    public void mousePressed(MouseEvent e) {
-			    	// TODO Auto-generated method stub
 			    	super.mousePressed(e);
 			    	initialxclick=e.getXOnScreen();
 			    }
@@ -368,7 +355,7 @@ class GameFrame extends JFrame
 					
 					if((e.getModifiers()&InputEvent.BUTTON3_MASK)==InputEvent.BUTTON3_MASK)
 			    	{
-						
+						//don't do anything with rightclick
 			    	}else
 			    	{
 			    		Actor Piece;
@@ -396,11 +383,8 @@ class GameFrame extends JFrame
 					    	else if(getComponentAt(mousepointer[0],mousepointer[1]).getClass().getName().equals("javax.swing.JLabel")) {}
 					    	
 					    	else { //actor selected
-					    		
 					    		Piece=(Actor)getComponentAt(mousepointer[0],mousepointer[1]);
-				    			
 					    		cell = Piece.currentcell;	
-					    		
 					    	}
 					    	
 					    	if(cell != null)  //if a cell/actor was clicked
@@ -766,12 +750,13 @@ class GameFrame extends JFrame
 		    //does the highlight glow effect
 			if(Highlightvalue>=255||Highlightvalue<=0) dHighlightvalue*=-1;
 			Highlightvalue+=dHighlightvalue;
-			
+			/*what all this does from here to the ~endrotationrender comment
+			is to allow iteration across the entire 2d array on the diagonal, while looping, 
+			while rotating the iteration 90 degrees based on the degrees of rotation*/
 			int rdx=1,rdy=1;
 			int rstx=0,rsty=0;
 			boolean ended=true;
 			double temprad=(rad+180)%360;
-	//TODO: FIX HERE
 			if (temprad<90)					{rsty=gsize-1;rstx=gsize-1;
 				if(temprad<=45) 					{rdx=1;rdy=-1;}else{rdx=-1;rdy=1;}}
 			else if (temprad>=90&&temprad<180)	{rsty=gsize-1;rstx=0;
@@ -849,17 +834,18 @@ class GameFrame extends JFrame
 					}
 					
 					
-				}
+				}//~endrotationrender
 					
 				
+				
 				int tempcolor;
+				i=Math.abs(i);
+				j=Math.abs(j);
+				
 				 if(cellgrid[i][j].getAttackRisk(currentturn)>0) {
 					 tempcolor=225;
-					 
 				 }
-				 else tempcolor=0;
-				
-				//System.out.println(i+" "+j);
+				 else tempcolor= 0;
 				
 				//color stuff
 				//checkered
@@ -871,17 +857,13 @@ class GameFrame extends JFrame
 				}
 				else //cell is not highlighted
 				{
+					
 					if(RoB==1)			g2d.setColor(new Color(255,0,tempcolor));
-					else 				g2d.setColor(new Color(0,0,tempcolor));	
-					
-					
-					
+					else 				g2d.setColor(new Color(0,0,tempcolor));		
 				}
-				
+				//create the cell
 				Polygon poly= cellgrid[i][j].getPoly(transx,transy,centerpoint, Math.toRadians(rad), 0.3);
 
-				
-				
 				
 				g2d.draw(poly);
 				g2d.fill(poly);
@@ -901,7 +883,7 @@ class GameFrame extends JFrame
 				
 			}
 			
-			rad +=radd;//TODO: Set radd to be user controlled once the final visualization is complete
+			rad +=radd;
 			rad=rad%360;
 			
 		}
@@ -946,8 +928,12 @@ class GameFrame extends JFrame
 				
 				if(j!=nodeArr.length-1) nodeArr[i][j].adgNodes[0]=nodeArr[i][j+1];
 				else nodeArr[i][j].adgNodes[0]=null;
+				
+				if(WarMode)
+				for(int k=0;k<4;k++)
+				nodeArr[i][j].setpointheight(k, random.nextInt(20));
 			}
-			//nodeArr[4][4].setpointheight(1, 10);
+			
 			return nodeArr;
 			
 		}
@@ -955,50 +941,15 @@ class GameFrame extends JFrame
 		
 		
 		
-		private void pieceloader(String id, int fac,int x,int y)
-		{
-			if(x>=0&&x<gsize&&y>=0&&y<gsize)
-			{
-				switch(id)
-				{
-					
-				case "pawn":
-						addPiece(new Pawn(fac),x,y);
-						break;
-				case "king":
-						kings[fac]=new King(fac);
-						addPiece(kings[fac],x,y);
-						kingPos[fac] = kings[fac].currentcell;
-						break;
-				case "queen":
-					addPiece(new Queen(fac),x,y);
-					break;
-				case "bishop":
-					addPiece(new Bishop(fac),x,y);
-					break;
-				case "knight":
-					addPiece(new Knight(fac),x,y);
-					break;
-				case "rook":
-					addPiece(new Rook(fac),x,y);
-					break;
-					
-				default:break;
 				
-				}
-					
-			
-			}
-		}
-		
 		private void Populate_board() {
 			//order placed affects 		
 			for(int i =0;i<(8+placementoffset);i++) addPiece(new Pawn(0),i,1);//white pawns
 			for(int i =0;i<(8+placementoffset);i++) addPiece(new Pawn(1),i,placementoffset+6);//black pawns
 			
 			kings[0]=new King(0);
-			kings[1]=new King(1);
-			addPiece(new Rook(0),0,0);
+			kings[1]=new King(1);//
+			addPiece(new Rook(0),0,0);//
 			addPiece(new Rook(0),7,0);
 			addPiece(new Knight(0),1,0);//white Knight1
 			addPiece(new Knight(0),6,0);//white Knight2
@@ -1007,9 +958,6 @@ class GameFrame extends JFrame
 			addPiece(kings[0],4,0);//white King
 			kingPos[0] = kings[0].currentcell;
 			addPiece(new Queen(0),3,0);//white Queen
-			
-			
-			//addPiece(new Rook(1),5,4);
 			
 		
 			addPiece(new Rook(1),0,placementoffset+7);//black rook1
@@ -1041,20 +989,14 @@ class GameFrame extends JFrame
 				addPiece(new Queen(1),placementoffset+3,placementoffset+7);
 				
 			}	
-				
-			//chara.testanimation.setloop(true);
 		}
-		
-		
-		
-		
 		public void addPiece(Actor new_actor) {
 			for(int i=0;i<cellgrid.length;i++)for(int j=0;j<cellgrid.length;j++)
 				if(cellgrid[i][j].occupied==false)	
 					{
-						System.out.println(i+" "+j);
+						
 						addPiece(new_actor,i,j);
-						//i=j=cellgrid.length;
+						
 					}
 		}
 		
@@ -1074,7 +1016,6 @@ class GameFrame extends JFrame
 			Actors.add(new_actor);
 			new_actor.xoffset=screenx;
 			new_actor.yoffset=screeny;
-			//further improvement note: impliment this Actor class so you can use it frome actor class
 		}
 		
 	
@@ -1091,10 +1032,6 @@ class GameFrame extends JFrame
 				
 				nodeArr[i][j].Virtualoffsetx=transx+focalpointx+rotoffx(ypof-focalpointy,xpof-focalpointx,Math.toRadians(rad));
 				nodeArr[i][j].Virtualoffsety=(int)(transy)+(int)(((focalpointy+rotoffy(ypof-focalpointy,xpof-focalpointx,Math.toRadians(rad))+(int)(cellsize/2)))*0.3);
-
-				//nodeArr[i][j].Virtualoffsetx=(int)((double)nodeArr[i][j].Virtualoffsetx/(publicdata.getBaseSize())*publicdata.width); //restag
-				//nodeArr[i][j].Virtualoffsety=(int)((double)nodeArr[i][j].Virtualoffsety/(publicdata.getBaseSize())*publicdata.height); //restag
-				
 			}	
 			
 		}
@@ -1117,19 +1054,6 @@ class GameFrame extends JFrame
 		public int rotoffy(int py, int px, double theta) {
 			return (int)((double)px*Math.cos(theta)+(double)py*Math.sin(theta));
 		}
-		//public Color radiallight()
-		
-		
-		public Color MySpectrum(int cindex) {
-			//all colors
-			if(cindex<225)
-				return new Color(0,0,cindex%225 );
-			else if(cindex>=225&&cindex<225*2)
-				return new Color(0,cindex%225,225-(cindex%225) );
-			else if((cindex>=225*2&&cindex<225*3))
-				return new Color(cindex%225,225-(cindex%225),0);
-			else return new Color(225,(cindex%225),(cindex%225));
-		}
-	
+
 	}
 }

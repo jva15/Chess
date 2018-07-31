@@ -1,3 +1,5 @@
+/*all code by Joseph Auguste and Matthew Klopfenstein*/
+
 package src.chess;
 import java.io.File;
 import java.io.IOException;
@@ -20,19 +22,13 @@ import javax.swing.*;
 
 public class Game
 { //
-	
 	protected Actor Actors[];
 	static GameFrame gameframe;
 	// execute application
 	public static void main( String args[] )
 	{
 		   gameframe = new GameFrame();
-		   //gameframe.CallVictor(1);
-	
-	
 	} // end main
-	
-	
 }
 
  class publicdata {

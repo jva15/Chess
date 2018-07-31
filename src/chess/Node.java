@@ -1,15 +1,7 @@
+/*all code by Joseph Auguste and Matthew Klopfenstein*/
 
 package src.chess;
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-
-import javax.swing.JPanel;
-import javax.swing.JFrame;
-import javax.swing.Timer;
-import javax.swing.*;
 
 public class Node {
 	
@@ -23,20 +15,9 @@ public class Node {
 	public int[] attackrisk;//counter for attackrisk
 	public int[] gaurdchan;
 	public Color color;
-	//int pax[]=new int[4];
-	//int pay[]=new int[4];
 	Point[] points;
 	
 	
-	static double MAXHEIGHT=100;
-	static double MAXIMUM_BRIGHTNESS=100;
-	
-	double maxbrightness;
-	
-	
-	int lightvalue;
-	double brightvalue;
-	double brightnessangle;
 	
 	
 	
@@ -105,7 +86,7 @@ public class Node {
 		xoffset=x;
 		yoffset=y;
 	}
-	
+	//p is the faction
 	public Node(int x,int y,int celsize,boolean p)
 	{
 		
@@ -114,7 +95,6 @@ public class Node {
 		
 		for(int i =0;i<4;i++) {height[i]=0;points[i]=new Point(0,0);}
 		setpolypoints(x,y);
-		initializ_Brightness_Modifier();
 	}
 	public void setcellsize(int celsize)
 	{
@@ -141,8 +121,9 @@ public class Node {
 	 * 	|_|	|_| for corners,	  1	
 	 * 	1 2 1 2
 	 * */
+	//
 	public void setpointheight(int corner,int pheight){
-		corner=3;
+		
 		height[corner]=-pheight;
 		if(corner==0)
 		{
@@ -176,15 +157,7 @@ public class Node {
 			if(adgNodes[0]!=null)adgNodes[0].height[0]=-pheight;
 		}
 		
-		
-		//0=0&3
-		//1=1&0
-		//2=2&1
-		//3=3&2
-		
-		
-		
-		
+	
 	}
 	
 	
@@ -194,8 +167,7 @@ public class Node {
 		points[1].setLocation(x+cellsize, y);		
 		points[2].setLocation(x+cellsize, y+cellsize);		
 		points[3].setLocation(x, y+cellsize);		
-		//for(int i=0;i<4;i++)
-		//System.out.println(points[i]);
+		
 	}
 	int[] xc=new int[4];
 	int[] yc=new int[4];
@@ -229,54 +201,7 @@ public class Node {
 		
 		return poly;
 	}
-	public int getbrightness(double radians)
-	{
-		double lightangle=Math.abs(radians%Math.PI-brightnessangle%Math.PI);
-		lightvalue=(int)(maxbrightness*(lightangle/Math.PI));
-		if(lightangle>Math.PI/2)lightvalue*=-1;
-		return lightvalue;
-		
-	}
-	public void initializ_Brightness_Modifier()
-	{
-		double ymax=0,ymin=0,xmax=0,xmin=0;
-		int hmax=0,hmin=0;
-		double polyheight=0;
-		double deltax=0,deltay=0;
-		
-		int ph;
-		double px;
-		double py;
-		
-		double intensity;
-		
-		for(int i=0;i>points.length;i++)
-		{
-			ph=height[i];
-			px=points[i].getX();
-			py=points[i].getY();
-			
-			if(ph>hmax) hmax=ph;
-			if(ph<hmin) hmin=ph;
-			
-			polyheight=hmax-hmin;
-			
-			if(px>xmax) xmax=px;
-			if(px<xmin) xmin=px;
-			
-			deltax=xmax-xmin;
-			
-			if(py>ymax) ymax=py;
-			if(py<ymin) ymin=py;
-
-			deltay=ymax-ymin;
-			
-						
-		}
-		brightnessangle=Math.atan(deltay/deltax);
-		intensity=polyheight/MAXHEIGHT;
-		maxbrightness=intensity*MAXIMUM_BRIGHTNESS;
-	}
+	
 	public int[] rotoffc(int[] cp,int[] p , double theta) {//returns the rotated point
 		int[] np=new int[2];
 		np[0]=cp[0]+ rotoffx((p[1]-cp[1]), (p[0]-cp[0]), theta);//calculates x

@@ -1,3 +1,5 @@
+/*all code by Joseph Auguste and Matthew Klopfenstein*/
+
 package src.chess;
 
 import java.awt.Graphics;
@@ -19,18 +21,18 @@ public class Sprite extends JPanel{
 	
 	
 	//image access info
-	int pixellength=27;//default
-	int pixelheight=39;//
-	int imagefileindex=0;//imagefileindex
-	int I_index_x,I_index_y;//sprite selectors
-	int xpicoffset=0,ypicoffset=0;
-	public String imagefile;
+	protected int pixellength=27;//default
+	protected int pixelheight=39;//
+	protected int imagefileindex=0;//imagefileindex
+	protected int I_index_x,I_index_y;//sprite selectors
+	protected int xpicoffset=0,ypicoffset=0;
+	private String imagefile;
 	
 	//drawing info
-	int xoffset=0,yoffset=0;
-	int xsize=70;
-	int ysize=(int)(70*2);
-	boolean Active;//
+	protected int xoffset=0,yoffset=0;
+	protected int xsize=70;
+	protected int ysize=(int)(70*2);
+	protected boolean Active;//
 	
 	
 	public Sprite()

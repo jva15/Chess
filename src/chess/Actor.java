@@ -1,55 +1,30 @@
+/*all code by Joseph Auguste and Matthew Klopfenstein*/
+
 package src.chess;
 
-import java.awt.AlphaComposite;
-import java.awt.Component;
-import java.awt.Composite;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.LayoutManager;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.Timer;
-
-	
-	
-	
-	
-public abstract class Actor extends Sprite implements ActionListener{//extend button
+public abstract class Actor extends Sprite {//extend button
 	
 	public boolean firstMove = true;   //true if actor has not moved yet, false otherwise
 	                                   //only needed for pawns(for enPassant & double moves on first turns), 
 	                                   //and kings and rooks(for castling)
 	public boolean enPassantRight = false, enPassantLeft = false; //only used for pawns
-	int ID;
+	int ID;//ID specific to the piece(by )
 	int factionID;//0: player 1, 1 player 2
 	Node currentcell;//keep this in mind when changing the Actors position.
 	
 
 	
 	boolean highlighted;
-	Rectangle Boundingbox;//cause setBounds took too much processing 
 	boolean set_to_a_cell=false;
 	
 	public Actor()
 	{
 		super();
 		highlighted=false;
-			
-			
-			//addActionListener(this);
-			//setVisible(false);
 	}
-	//create actor and associate to the cell
+	//create actor, but don't attach to a cell, nor render it.
 	public Actor(int fac)
 	{
 		this();
@@ -57,7 +32,6 @@ public abstract class Actor extends Sprite implements ActionListener{//extend bu
 		Active=false;
 		set_to_a_cell=false;
 	}
-	
 	Actor(Node cell,int fac)
 	{
 		this(fac);
@@ -67,45 +41,16 @@ public abstract class Actor extends Sprite implements ActionListener{//extend bu
 	
 	
 	
-	public int GetY() {return yoffset;}
-	//set offset to the lower left corner of sprite
-	public void setatoffset(int ox, int oy) {
-		this.xoffset=ox;
-		this.yoffset=oy-(int)(ysize);
+	public void moveTo(Node newcell) {
+		
+		highlight(false);
+		unsetCell();
+		if (newcell.actor!=null)newcell.actor.kill();
+		setCell(newcell);
 		
 	}
-	
-	
-	
-	public void updatebycell()
-	{
-		if(Active&&set_to_a_cell)
-		if (currentcell!=null);
-		{
-			int offx;
-			if(currentcell.cellsize>xsize) offx=currentcell.Virtualoffsetx+(currentcell.cellsize/2-(xsize/2));
-			else offx = currentcell.Virtualoffsetx-((xsize/2)-currentcell.cellsize/2);
-			setatoffset(offx,currentcell.Virtualoffsety);
-			setBounds(offx,currentcell.Virtualoffsety-ysize,xsize,ysize);
-		}
-	}
-	public void updatebycell(int moveoffsetx,int moveoffsety)//not setup yet, but it will updates by cell, with an offset
-	{
-		
-		int offx;
-		if(currentcell.cellsize>xsize) offx=currentcell.Virtualoffsetx+(currentcell.cellsize/2-(xsize/2));
-		else offx = currentcell.Virtualoffsetx-((xsize/2)-currentcell.cellsize/2);
-		setatoffset(offx+moveoffsetx,currentcell.Virtualoffsety+moveoffsety);
-		setBounds(offx,currentcell.Virtualoffsety-ysize,xsize,ysize);
-		
-	}
-	public void setCell(Node cell) {
-		currentcell=cell;
-		currentcell.actor=this;
-		currentcell.occupied=true;
-		set_to_a_cell=true;
-		updatebycell();
-	}
+	public abstract void highlight(boolean b);  //abstract method will be defined in subclasses
+	public abstract void setRange(boolean inrange);
 	public void unsetCell()
 	{
 		currentcell.actor=null;
@@ -125,14 +70,29 @@ public abstract class Actor extends Sprite implements ActionListener{//extend bu
 		set_to_a_cell=false;
 		
 	}
+	public void setCell(Node cell) {
+		currentcell=cell;
+		currentcell.actor=this;
+		currentcell.occupied=true;
+		set_to_a_cell=true;
+		updatebycell();
+	}
+	//set offset to the lower left corner of sprite
+	public void setatoffset(int ox, int oy) {
+		this.xoffset=ox;
+		this.yoffset=oy-(int)(ysize);
+		
+	}
 	public void setoffset(int ox,int oy) {
 		
 		this.xoffset=ox;
 		this.yoffset=oy;
 	
 	}
-	
-	
+	public void setsize(int xs,int ys) {
+		this.xsize=xs;
+		this.ysize=ys;
+	}
 	public void Drawframe(Graphics2D g2d) {
 		if(Active)
 		{	
@@ -140,41 +100,31 @@ public abstract class Actor extends Sprite implements ActionListener{//extend bu
 			repaint();
 		}
 	}
-	public void moveTo(Node newcell) {
-		
-		//setRange(false);
-		highlight(false);
-		unsetCell();
-		if (newcell.actor!=null)newcell.actor.kill();
-		setCell(newcell);
-		//setRange(true);
-		
-	}
 	
-	//tests whether move is valid
-	//public boolean testMove(Node newcell)
+	//update offset by cell
+	public void updatebycell(int moveoffsetx,int moveoffsety)//not setup yet, but it will updates by cell, with an offset
 	{
 		
+		int offx;
+		if(currentcell.cellsize>xsize) offx=currentcell.Virtualoffsetx+(currentcell.cellsize/2-(xsize/2));
+		else offx = currentcell.Virtualoffsetx-((xsize/2)-currentcell.cellsize/2);
+		setatoffset(offx+moveoffsetx,currentcell.Virtualoffsety+moveoffsety);
+		setBounds(offx,currentcell.Virtualoffsety-ysize,xsize,ysize);
+		
 	}
-	
-	public abstract void setRange(boolean inrange); //uses the classmember factionId aswell
-
-		/*TODO: Impliment setRange for each of the subclasses of Actor
-		* similar to highlight but instead of highlighting
-		* it should call setAttackrisk(inrange,factionID) on the cell
-		* remember not to let the piece setRange on itself
-		* 
-		* this would be a good opportunity to practice with iterators to avoid repeating code for both 
-		* highlight and setRange
-		*/
-		
-		
-
-	
-	
-	
-	public abstract void highlight(boolean b);  //abstract method will be defined in subclasses
-	
+	//update offset by cell
+	public void updatebycell()
+	{
+		if(Active&&set_to_a_cell)
+		if (currentcell!=null);
+		{
+			int offx;
+			if(currentcell.cellsize>xsize) offx=currentcell.Virtualoffsetx+(currentcell.cellsize/2-(xsize/2));
+			else offx = currentcell.Virtualoffsetx-((xsize/2)-currentcell.cellsize/2);
+			setatoffset(offx,currentcell.Virtualoffsety);
+			setBounds(offx,currentcell.Virtualoffsety-ysize,xsize,ysize);
+		}
+	}
 	//function highlights or unhighlights cells vertically/horizontally in all directions, starting from currentcell
     //and ending at end of board/other piece
 	protected void lineHighlighter(boolean b)
@@ -244,9 +194,9 @@ public abstract class Actor extends Sprite implements ActionListener{//extend bu
 		for(int i=0;i<4;i++)
 		{
 			n = currentcell;
-			while(n.adgNodes[0] != null)
+			while(n.adgNodes[i] != null)
 			{
-				n = n.adgNodes[0];                     //advance to next cell
+				n = n.adgNodes[i];                     //advance to next cell
 				n.setAttackRisk(inrange, factionID);   //update attack risk of cell
 				if(n.occupied)                         //if node is occupied, check for a king and break
 				{
@@ -352,19 +302,4 @@ public abstract class Actor extends Sprite implements ActionListener{//extend bu
 		
 	}
 	
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	public void setsize(int xs,int ys) {
-		this.xsize=xs;
-		this.ysize=ys;
-	}
-	
-	
-		
-
-
 }

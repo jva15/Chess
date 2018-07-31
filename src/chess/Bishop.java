@@ -1,6 +1,7 @@
+/*all code by Joseph Auguste and Matthew Klopfenstein*/
+
 package src.chess;
 
-import java.awt.event.ActionEvent;
 
 public class Bishop extends Actor {
 

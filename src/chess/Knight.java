@@ -1,3 +1,5 @@
+/*all code by Joseph Auguste and Matthew Klopfenstein*/
+
 package src.chess;
 
 import java.awt.event.ActionEvent;
@@ -8,7 +10,6 @@ public class Knight extends Actor {
 		super();
 		setupID();
 	}
-
 	public Knight(int f) {
 		super(f);
 		setupID();

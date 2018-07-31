@@ -1,3 +1,5 @@
+/*all code by Joseph Auguste and Matthew Klopfenstein*/
+
 package src.chess;
 
 import java.awt.event.ActionEvent;
@@ -27,7 +29,7 @@ public class King extends Actor {
 		I_index_y=factionID;
 		I_index_x=1;
 	}
-	
+	//sets the reversed direction
 	public void setthreat(int incomingdir ) {
 		if(incomingdir!=-1)directionofthreat=((incomingdir+4)%8);
 		else directionofthreat=-1;
@@ -135,6 +137,7 @@ public class King extends Actor {
 				n.adgNodes[3].setAttackRisk(inrange, factionID);
 		}
 	}
+	//if the king cant move
 	public boolean isTrapped()
 	{
 		Node way;
@@ -158,6 +161,7 @@ public class King extends Actor {
 		return true;
 
 	}
+	//if there is no piece that could take the hit nor attack the assailant
 	public boolean cantcounter(Actor Piece)
 	{
 		
